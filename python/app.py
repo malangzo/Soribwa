@@ -44,7 +44,7 @@ def extract_feature(file_name):
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://13.125.186.170:8000", "http://43.203.246.169:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
