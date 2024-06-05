@@ -163,6 +163,7 @@ async def cycle_drawGraph(file_uuid: str):
             
             img_buf = io.BytesIO()
             img_buf.seek(0)
+            
 
             return {"STATUS": 200, "RESULT": {"MESSAGE": "Graph drawn successfully"}, "IMAGE": img_buf}
         except Exception as e:
@@ -170,7 +171,13 @@ async def cycle_drawGraph(file_uuid: str):
             return {"STATUS": 500, "RESULT": {"MESSAGE": "Error during graph drawing"}}
         finally:
             session.close()
-               
+
+@app.get('/cycle/graph')
+async def cycle_graph():
+    img_buf = '../nodejs/public/images/img_buf.png'
+    if os.path.exists(img_buf):
+        return FileResponse(img_buf)
+            
 
 @app.get('/cycle/delete')
 async def cycle_delete(file_uuid=None):

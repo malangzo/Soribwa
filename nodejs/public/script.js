@@ -65,7 +65,7 @@ const sendDataToServer = async (blob) => {
     const timestamp = dateObject.toLocaleString('ko-KR', options);
     formData.append('timestamp', timestamp);
 
-    await fetch('http://13.125.186.170:3000/cycle/record-analyze', {
+    await fetch('http://43.203.246.169:3000/cycle/record-analyze', {
         method: 'POST',
         body: formData,
     })
@@ -77,7 +77,7 @@ const sendDataToServer = async (blob) => {
     })
     .then(data => {
         console.log(data);
-        window.location.href = 'http://13.125.186.170:8000/cyclegraph.html'; 
+        window.location.href = '/cyclegraph.html'; 
     })
     .catch(error => {
         console.error('There was an error!', error);
