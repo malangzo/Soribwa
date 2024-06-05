@@ -42,6 +42,13 @@ header h1 {
     margin: 0 5px;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+    display: block; 
+    margin: auto; 
+}
+
 .settings {
     display: flex;
     justify-content: flex-end;

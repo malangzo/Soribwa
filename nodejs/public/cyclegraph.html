@@ -16,6 +16,7 @@
     a:active { color: white; text-decoration: none;}
     a:hover { color: #006DD7; text-decoration: none;}
   </style>
+  <script src="script.js" defer></script>
 </head>
 
 <body>
@@ -27,7 +28,7 @@
               <a href="#">회원가입</a>
           </div>
       </header>
-      
+      <img src="images/img_buf.png">
       <footer>
         <div class="settings">
           <a href="http://13.125.186.170:8000/">메인으로</a>
@@ -36,6 +37,18 @@
   </div>
 
 </body>
-  
+<!-- <script>
+  const imgElement = document.getElementById('graph-image');
+    try{
+        console.log('Fetching graph image...');
+        const response = axios.get('/cycle/show-graph', { responseType: 'blob' });
+        const imageBlob = response.data;
+        console.log(imageBlob)
+        const imageObjectURL = URL.createObjectURL(imageBlob);
+        imgElement.src = imageObjectURL;
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
+</script> -->
 
 </html>

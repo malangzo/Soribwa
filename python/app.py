@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request, status, File, UploadFile
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing_extensions import Annotated
 import sys
@@ -19,6 +19,7 @@ import shutil
 from pydub import AudioSegment
 from io import BytesIO
 from io import StringIO
+import io
 from starlette.requests import Request
 from datetime import datetime
 from database import db_conn
@@ -157,9 +158,13 @@ async def cycle_drawGraph(file_uuid: str):
             plt.xlabel('Decibel')       
             plt.ylabel('Label')          
             plt.title('My room')
-            plt.savefig('graph.png')
             
-            return {"STATUS": 200, "RESULT": {"MESSAGE": "Graph drawn successfully"}}     
+            plt.savefig('../nodejs/public/images/img_buf.png')
+            
+            img_buf = io.BytesIO()
+            img_buf.seek(0)
+
+            return {"STATUS": 200, "RESULT": {"MESSAGE": "Graph drawn successfully"}, "IMAGE": img_buf}
         except Exception as e:
             print(f"Error during graph drawing: {e}")
             return {"STATUS": 500, "RESULT": {"MESSAGE": "Error during graph drawing"}}
@@ -176,7 +181,13 @@ async def cycle_delete(file_uuid=None):
         session.commit()
         result = session.query(CycleData).all()
         return result
-    
+
+@app.get('/cycle/delete-all')
+async def cycle_deleteAll():
+    result = session.query(CycleData).delete()
+    session.commit()
+    result = session.query(CycleData).all()
+    return result
     
     
     
