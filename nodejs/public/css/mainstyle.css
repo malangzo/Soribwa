@@ -1,0 +1,114 @@
+.gowun-dodum-regular {
+    font-family: "Gowun Dodum", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+body {
+    font-family: "Gowun Dodum", sans-serif;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+.container {
+    background-color: white;
+    width: 100%;
+    min-height: 100%;
+    max-width: 1080px; /* 갤럭시 S22의 너비 */
+    max-height: 2340px; /* 갤럭시 S22의 높이 */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+header, footer {
+    background-color: #1E90FF;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+main h2 {
+    text-align: center;
+}
+
+.auth a {
+    color: white;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.login-message {
+    background-color: #ADD8E6;
+    padding: 15px;
+    text-align: center;
+    font-size: 1em;
+    flex-shrink: 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px;
+    flex-grow: 1;
+}
+
+.grid-item {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    padding: 20px;
+}
+
+.grid-item img {
+    max-width: 50px;
+    margin-bottom: 10px;
+}
+
+.settings {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%; 
+}
+
+.settings a {
+    color: white;
+    text-decoration: none;
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media (min-width: 1081px) {
+    .container {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+    .grid {
+        gap: 20px;
+        padding: 20px;
+    }
+    .grid-item {
+        padding: 30px;
+    }
+    .grid-item img {
+        max-width: 70px;
+    }
+}

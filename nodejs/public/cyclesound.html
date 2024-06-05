@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소리봐</title>
+  <link rel="stylesheet" href="css/cyclestyle.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <style type="text/css">
+    a:link { color:white; text-decoration: none;}	
+    a:visited { color: white; text-decoration: none;}	
+    a:active { color: white; text-decoration: none;}
+    a:hover { color: #006DD7; text-decoration: none;}
+  </style>
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <div class="container">
+      <header>
+          <h1>소리봐</h1>
+          <div class="auth">
+              <a href="#">로그아웃</a>
+              <a href="#">회원가입</a>
+          </div>
+      </header>
+      <main>
+          <h2>내 공간 소음 측정</h2>
+          <div class="grid">
+              <div class="grid-item">
+                  <img src="images/sound.png" onclick="startRecording()">
+                  <p>소음 측정 시작</p>
+              </div>
+              <p class="measuring" id="measuringText"><br></p>
+              <div class="grid-item">
+                  <img src="images/nosound.png" onclick="stopRecording()">
+                  <p>소음 측정 종료</p>
+              </div>
+              <div class="grid-item">
+                  <img src="images/cross.png" onclick="cancelRecording()">
+                  <p>소음 측정 취소</p>
+              </div>
+          </div>
+      </main>
+      <footer>
+        <div class="settings">
+          <a href="http://13.125.186.170:8000/">메인으로</a>
+        </div>
+      </footer>
+  </div>
+
+</body>
+  
+
+</html>
