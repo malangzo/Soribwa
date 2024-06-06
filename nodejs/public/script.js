@@ -65,7 +65,7 @@ const sendDataToServer = async (blob) => {
     const timestamp = dateObject.toLocaleString('ko-KR', options);
     formData.append('timestamp', timestamp);
 
-    await fetch('http://43.203.246.169:3000/cycle/record-analyze', {
+    await fetch('{fastapi}/cycle/record-analyze', {
         method: 'POST',
         body: formData,
     })
