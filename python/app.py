@@ -26,6 +26,9 @@ from database import db_conn
 from models import CycleData
 import csv
 
+secret_file = os.path.join(BASE_DIR, 'secret.json')
+Nodeapi = get_secret("Nodeapi")
+Fastapi = get_secret("Fastapi")
 app = FastAPI()
 
 db = db_conn()
@@ -44,7 +47,7 @@ def extract_feature(file_name):
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://13.125.186.170:8000", "http://43.203.246.169:3000"],
+    allow_origins=["{Node}", "http://43.203.246.169:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
