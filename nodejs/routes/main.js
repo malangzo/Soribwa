@@ -9,12 +9,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+require('dotenv').config();
 
-// app.get('/cycle/show-graph', (req, res) => {
-//     image_path = '../public/images/img_buf.png'
-//     console.log(image_path)
-//     res.sendFile(image_path, { root: __dirname });
-// });
-
+app.get('/path', function(req, res) {
+    const fastapi = process.env.fastapi;
+    console.log(fastapi);
+    res.json({ fastapi: fastapi });
+});
 
 module.exports = app;

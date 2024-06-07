@@ -20,13 +20,26 @@ from pydub import AudioSegment
 from io import BytesIO
 from io import StringIO
 import io
+import json
 from starlette.requests import Request
 from datetime import datetime
 from database import db_conn
 from models import CycleData
 import csv
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
 secret_file = os.path.join(BASE_DIR, 'secret.json')
+
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        errorMsg = "Set the {} environment variable.".format(setting)
+        return errorMsg
+    
 Nodeapi = get_secret("Nodeapi")
 Fastapi = get_secret("Fastapi")
 app = FastAPI()
@@ -44,10 +57,10 @@ def extract_feature(file_name):
     print("Feature extraction successful")  
     return np.array([mfccsscaled])
 
-# CORS 설정
+#CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["{Node}", "{Fastapi}"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -81,12 +94,13 @@ async def cycle_recordAnalyze(request: Request, file: UploadFile = UploadFile(..
         print(file_name)
         with open(f'{file_name}', "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-    
+
         test_feature = extract_feature(file_name)
+        print(test_feature)
         
         # 업로드 완료 후 임시 파일 삭제
         os.remove(f'{file_name}')
-    
+
         if test_feature is not None:
             predicted_proba_vector = model.predict(test_feature)
             predicted_class_index = np.argmax(predicted_proba_vector)
@@ -100,7 +114,7 @@ async def cycle_recordAnalyze(request: Request, file: UploadFile = UploadFile(..
         await cycle_makeTsv(predicted_class_label, timestamp, decibel)
         
         return {"STATUS": 200, "RESULT": {"analyze_result": predicted_class_label, "time" : timestamp, "decibel" : decibel, "MESSAGE" : "All result is successfully analyze"}}
-    
+        
     except Exception as e:
         print(f"Error during model prediction: {e}")
         return {"STATUS": 400, "RESULT": {"MESSAGE": "Error"}}
@@ -201,4 +215,3 @@ async def cycle_deleteAll():
     
     
     
-

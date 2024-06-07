@@ -3,6 +3,12 @@ let audioStream;
 let isRecording = false;
 let chunks = [];
 
+async function getFastapiValue() {
+    const response = await fetch('/path'); 
+    const data = await response.json(); 
+    return data.fastapi;
+}
+
 const startRecording = () => {
     if (!isRecording) { 
         isRecording = true;
@@ -65,23 +71,27 @@ const sendDataToServer = async (blob) => {
     const timestamp = dateObject.toLocaleString('ko-KR', options);
     formData.append('timestamp', timestamp);
 
-    await fetch('{fastapi}/cycle/record-analyze', {
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.text();
+    const fastapi = await getFastapiValue();
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${fastapi}/cycle/record-analyze`, true);
+    //xhr.setRequestHeader("content-type", "multipart/form-data");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                console.log(xhr.responseText);
+                window.location.href = '/cyclegraph.html';
+            } else {
+                console.error('Network response was not ok.');
+            }
         }
-        throw new Error('Network response was not ok.');
-    })
-    .then(data => {
-        console.log(data);
-        window.location.href = '/cyclegraph.html'; 
-    })
-    .catch(error => {
+    };
+    
+    xhr.onerror = function (error) {
         console.error('There was an error!', error);
-    });
+    };
+    xhr.send(formData);
+
 };
 
 const stopRecording = () => {
@@ -105,4 +115,8 @@ const cancelRecording = () => {
     }
 };
 
-
+async function setDynamicImageSrc() {
+    const fastapi = await getFastapiValue();
+    const imgElement = document.getElementById('dynamicImage');
+    imgElement.src = `${fastapi}/cycle/graph`;
+}
