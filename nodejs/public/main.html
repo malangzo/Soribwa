@@ -29,10 +29,10 @@
     <main>
       <div class="login-message">로그인이 필요합니다.</div>
       <div class="grid">
-        <div class="grid-item">
+        <a href="team_one"><div class="grid-item">
           <img src="images/sound.png" alt="실시간 소음 측정">
           <p>실시간 소음 측정</p>
-        </div>
+        </div></a>
         <a href="/cyclesound.html"><div class="grid-item">
           <img src="images/house.png" alt="내 공간 소음 측정">
           <p>내 공간 소음 측정</p>
@@ -54,5 +54,9 @@
     </footer>
   </div>
 </body>
-
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+    setDynamicImageSrc();
+  });
+</script>
 </html>

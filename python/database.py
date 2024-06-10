@@ -2,26 +2,23 @@ from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 import os.path
 import json
+from dotenv import load_dotenv
 
+# BASE_DIR 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
-secret_file = os.path.join(BASE_DIR, 'secret.json')
+dotenv_path = os.path.join(BASE_DIR, '.env')
 
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
+# .env 파일 로드
+load_dotenv(dotenv_path)
 
-def get_secret(setting, secrets=secrets):
-    try:
-        return secrets[setting]
-    except KeyError:
-        errorMsg = "Set the {} environment variable.".format(setting)
-        return errorMsg
+# 환경 변수 가져오기
+HOSTNAME = os.getenv("Mysql_Hostname")
+PORT = os.getenv("Mysql_Port")
+USERNAME = os.getenv("Mysql_Username")
+PASSWORD = os.getenv("Mysql_Password")
+DBNAME = os.getenv("Mysql_DBname")
 
-HOSTNAME = get_secret("Mysql_Hostname")
-PORT = get_secret("Mysql_Port")
-USERNAME = get_secret("Mysql_Username")
-PASSWORD = get_secret("Mysql_Password")
-DBNAME = get_secret("Mysql_DBname")
-
+# DB URL 생성
 DB_URL = f'mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DBNAME}'
 
 class db_conn:

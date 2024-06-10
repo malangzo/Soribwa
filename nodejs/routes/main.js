@@ -17,4 +17,10 @@ app.get('/path', function(req, res) {
     res.json({ fastapi: fastapi });
 });
 
+app.get('/team_one', function(req, res) {
+    const team_one = process.env.Team_One;
+    console.log(team_one);
+    res.redirect(team_one);
+});
+
 module.exports = app;

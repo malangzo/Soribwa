@@ -9,6 +9,12 @@ async function getFastapiValue() {
     return data.fastapi;
 }
 
+async function getTeamOne() {
+    const response = await fetch('/team_one'); 
+    const data = await response.json(); 
+    return data.team_one;
+}
+
 const startRecording = () => {
     if (!isRecording) { 
         isRecording = true;
@@ -117,6 +123,10 @@ const cancelRecording = () => {
 
 async function setDynamicImageSrc() {
     const fastapi = await getFastapiValue();
+    const teamapi = await getTeamOne();
+    const team_one = document.getElementById('team_one');
+    team_one.href = `${teamapi}`;
     const imgElement = document.getElementById('dynamicImage');
     imgElement.src = `${fastapi}/cycle/graph`;
 }
+

@@ -25,23 +25,22 @@ from starlette.requests import Request
 from datetime import datetime
 from database import db_conn
 from models import CycleData
+from dotenv import load_dotenv
 import csv
 
+# BASE_DIR 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
-secret_file = os.path.join(BASE_DIR, 'secret.json')
+dotenv_path = os.path.join(BASE_DIR, '.env')
 
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
+# .env 파일 로드
+load_dotenv(dotenv_path)
 
-def get_secret(setting, secrets=secrets):
-    try:
-        return secrets[setting]
-    except KeyError:
-        errorMsg = "Set the {} environment variable.".format(setting)
-        return errorMsg
-    
-Nodeapi = get_secret("Nodeapi")
-Fastapi = get_secret("Fastapi")
+# 환경 변수 가져오기
+HOSTNAME = os.getenv("Mysql_Hostname")
+PORT = os.getenv("Mysql_Port")
+USERNAME = os.getenv("Mysql_Username")
+PASSWORD = os.getenv("Mysql_Password")
+
 app = FastAPI()
 
 db = db_conn()
