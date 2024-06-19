@@ -123,10 +123,13 @@ const cancelRecording = () => {
 
 async function setDynamicImageSrc() {
     const fastapi = await getFastapiValue();
-    const teamapi = await getTeamOne();
-    const team_one = document.getElementById('team_one');
-    team_one.href = `${teamapi}`;
     const imgElement = document.getElementById('dynamicImage');
     imgElement.src = `${fastapi}/cycle/graph`;
 }
+
+// async function setTeamOne() {
+//     const teamapi = await getTeamOne();
+//     const team_one = document.getElementById('team_one');
+//     team_one.href = `${teamapi}`;
+// }
 

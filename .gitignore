@@ -17,3 +17,6 @@ docker/mysql/.env
 
 python/secret.json
 
+*/**/node_modules
+*/**/package-lock.json
+*/**/**/package-lock.json
