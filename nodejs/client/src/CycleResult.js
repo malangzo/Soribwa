@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import './Cycle.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 

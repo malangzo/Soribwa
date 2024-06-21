@@ -146,7 +146,7 @@ async def cycle_dataInsert(file_uuid: str, user_uuid: str, tsv_data: str):
     session.commit()
     result = session.query(CycleData).all()
     
-    await cycle_drawGraph(file_uuid=file_uuid)
+    #await cycle_drawGraph(file_uuid=file_uuid)
     return {"STATUS": 200, "RESULT": {"data" : result}}
     
 @app.post('/cycle/draw-graph')

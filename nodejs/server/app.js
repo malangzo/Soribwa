@@ -1,23 +1,19 @@
 const express = require('express')
 const morgan = require('morgan')
 const path = require('path')
-const app = express()
+const multer = require('multer');
+const cors = require('cors');
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const mainRoute = require('./routes/main');
+const app = express()
 
-const PORT = process.env.PORT || 8000;
 
-// API 라우트
-app.use('/api', mainRoute);
+app.set('port', process.env.PORT || 8000)
 
-// React 정적 파일 제공
-app.use(express.static(path.join(__dirname, '../client/build')));
+var main = require('./routes/main.js')
+app.use('/', main)
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-});
 
-app.listen(PORT, () => {
+app.listen(app.get('port'), () => {
     console.log('8000 Port: Server Started~!!')
 });

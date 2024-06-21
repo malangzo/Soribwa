@@ -62,3 +62,7 @@
     border: none;
     transform: translate(-50%, -50%);
 }
+
+.cyclegraph {
+    background-color: #FFFFFF;
+}
