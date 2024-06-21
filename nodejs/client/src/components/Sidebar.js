@@ -8,6 +8,8 @@ import settingsIcon from '../images/etc.png';
 import backIcon from '../images/backIcon_black.png';
 import userAvatar from '../images/userAvatar.jpg';
 
+import { Link } from "react-router-dom";
+
 const Sidebar = ({ isOpen, onClose }) => {
     const username = '유지민'; // 사용자 이름
 
@@ -35,12 +37,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                             실시간 소음 측정
                         </a>
                     </li>
-                    <li>
+                    <Link to="/Cyclesound">
                         <a href="#">
                             <img src={houseIcon} alt="내 공간 소음 측정" />
                             내 공간 소음 측정
                         </a>
-                    </li>
+                    </Link>
                     <li>
                         <a href="#">
                             <img src={graphIcon} alt="측정 그래프 보기" />

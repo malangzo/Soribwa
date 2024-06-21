@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }))
 require('dotenv').config();
 
 app.get('/path', function(req, res) {
-    const fastapi = process.env.fastapi;
+    const fastapi = process.env.Fastapi;
     console.log(fastapi);
     res.json({ fastapi: fastapi });
 });

@@ -1,23 +1,64 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500&display=swap');
 
-.header {
-  background-color: #3ABEF9;
-  font-family: "IBM Plex Sans KR", sans-serif;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
+.custom-header {
+    background-color: #3ABEF9;
 }
 
 .menu-button,
 .back-button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5em;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
 }
 
-main {
+.cyclemain {
     background-color: #3ABEF9;
+    font-family: "IBM Plex Sans KR", sans-serif;
+    color: #000000;
+}
+
+.circle {
+    position: relative;
+    top: 10%;
+    margin: 0 auto;
+    width: 250px;
+    height: 250px;
+    border: 5px solid #000000;
+    border-radius: 50%;
+    background-color: transparent;
+    transition: background-color 0.3s ease; /* 부드러운 색상 전환 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.circle.recording {
+    border: 5px solid #FF3838; 
+}
+
+.measuring-text,
+.recording-time {
+    font-family: "IBM Plex Sans KR", sans-serif;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #000000;
+    width: 100%; 
+    text-align: center; 
+}
+
+
+.play-button {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    background: none;
+    border: none;
+    transform: translate(-50%, -50%);
 }
