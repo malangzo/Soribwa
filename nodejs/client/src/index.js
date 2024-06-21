@@ -1,5 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+import { render } from 'react-dom';
+import App from "./App";
+import Cyclesound from "./Cyclesound";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const rootElement = document.getElementById('root');
+render(
+  <BrowserRouter>
+    <Routes>
+      <Route path ='/' element={<App />} />
+      <Route path ='/Cyclesound' element={<Cyclesound />} />
+    </Routes>
+  </BrowserRouter>,
+  rootElement
+);

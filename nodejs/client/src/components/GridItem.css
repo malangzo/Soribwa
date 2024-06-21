@@ -1,0 +1,15 @@
+.grid-item {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  text-align: center;
+  padding: 20px;
+  text-decoration: none;  
+  color: #000000;
+}
+
+.grid-item img {
+  max-width: 50px;
+  margin-top: 10px;
+}
