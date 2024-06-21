@@ -1,18 +1,17 @@
 import React from 'react';
-import { render } from 'react-dom';
-import App from "./App";
-import Cyclesound from "./Cyclesound";
-import CycleResult from "./CycleResult";
+import ReactDOM from 'react-dom/client'; // render 함수를 ReactDOM에서 가져옵니다.
+import App from './App';
+import Cyclesound from './Cyclesound';
+import CycleResult from './CycleResult';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 const rootElement = document.getElementById('root');
-render(
+ReactDOM.createRoot(rootElement).render(
   <BrowserRouter>
     <Routes>
       <Route path ='/' element={<App />} />
       <Route path ='/Cyclesound' element={<Cyclesound />} />
       <Route path ='/CycleResult' element={<CycleResult />} />
     </Routes>
-  </BrowserRouter>,
-  rootElement
+  </BrowserRouter>
 );

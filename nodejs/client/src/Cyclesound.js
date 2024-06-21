@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './Cycle.css';
 import Sidebar from './components/Sidebar';
 import sideBar from './images/sideBar.png';
 import backIcon from './images/backIcon.png';
 import startIcon from './images/startIcon.png';
 import stopIcon from './images/stopIcon.png';
-
 import { Link, useNavigate } from "react-router-dom";
 
 const Cyclesound = () => {
@@ -13,7 +12,7 @@ const Cyclesound = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
     const [mediaRecorder, setMediaRecorder] = useState(null);
-    const [chunks, setChunks] = useState([]);
+    const chunksRef = useRef([]);
     const [audioStream, setAudioStream] = useState(null);
     const [measuringText, setMeasuringText] = useState('');
 
@@ -26,10 +25,10 @@ const Cyclesound = () => {
     const startRecording = async () => {
         if (!isRecording) {
             setIsRecording(true);
-            setChunks([]);
+            chunksRef.current = [];
             setRecordingTime(0);
             setMeasuringText('');
-            document.querySelector('.circle').classList.add('recording'); // 원의 색상 변경
+            document.querySelector('.circle').classList.add('recording');
 
             try {
                 const audioIN = { audio: true };
@@ -41,24 +40,8 @@ const Cyclesound = () => {
 
                 recorder.addEventListener('dataavailable', function (event) {
                     if (event.data.size > 0) {
-                        setChunks(prevChunks => [...prevChunks, event.data]);
+                        chunksRef.current.push(event.data);
                     }
-                });
-
-                recorder.addEventListener('stop', async function () {
-                    setIsRecording(false);
-                    setMeasuringText('측정이 완료되었습니다.');
-                    document.querySelector('.circle').classList.remove('recording');
-
-                    const blob = new Blob(chunks, { 'type': 'audio/wav' });
-                    if (shouldSendData) {
-                        await sendDataToServer(blob);
-                        navigate('/CycleResult');
-                    }
-                });
-
-                recorder.addEventListener('error', function (error) {
-                    console.error('Recording error:', error);
                 });
 
                 recorder.start();
@@ -69,7 +52,7 @@ const Cyclesound = () => {
         }
     };
 
-    const sendDataToServer = async (blob) => {
+    const sendDataToServer = useCallback(async (blob) => {
         const formData = new FormData();
         formData.append('file', blob, 'recording.wav');
         const dateObject = new Date();
@@ -78,66 +61,73 @@ const Cyclesound = () => {
         formData.append('timestamp', timestamp);
 
         const fastapi = process.env.REACT_APP_FASTAPI;
-        console.log(fastapi);
+        console.log('Sending data to server:', fastapi);
 
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', `${fastapi}/cycle/record-analyze`, true);
-        //xhr.setRequestHeader("content-type", "multipart/form-data");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    console.log(xhr.responseText);
-                } else {
-                    console.error('Network response was not ok.');
-                }
+        try {
+            const response = await fetch(`${fastapi}/cycle/record-analyze`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        };
 
-        xhr.onerror = function (error) {
-            console.error('There was an error!', error);
-        };
-        xhr.send(formData);
-    };
+            const result = await response.text();
+            console.log('Server response:', result);
+            navigate('/CycleResult');
+        } catch (error) {
+            console.log('Error sending data to server:', error);
+        }
+    }, [navigate]);
 
-    const stopRecording = () => {
-        const confirmStop = window.confirm('저장하시겠습니까?');
-        if (confirmStop) {
-            if (mediaRecorder && mediaRecorder.state === 'recording') {
-                setShouldSendData(true);
-                mediaRecorder.stop();
-                console.log("Recording stopped");
+    const stopRecording = useCallback(() => {
+        return new Promise((resolve, reject) => {
+            const confirmStop = window.confirm('저장하시겠습니까?');
+            if (confirmStop) {
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    console.log('Stopping recording...');
+                    
+                    mediaRecorder.addEventListener('stop', async () => {
+                        setIsRecording(false);
+                        document.querySelector('.circle').classList.remove('recording');
+                        
+                        console.log('Chunks after stopping:', chunksRef.current);
+                        if (chunksRef.current.length > 0) {
+                            const blob = new Blob(chunksRef.current, { 'type': 'audio/wav' });
+                            await sendDataToServer(blob);
+                            resolve();
+                        } else {
+                            console.warn('No recorded chunks available.');
+                            reject(new Error('No recorded chunks available.'));
+                        }
+                    }, { once: true });
 
-                document.querySelector('.circle').classList.remove('recording');
-
-                if (chunks.length > 0) {
-                    const blob = new Blob(chunks, { 'type': 'audio/wav' });
-                    sendDataToServer(blob);
+                    mediaRecorder.stop();
                 } else {
-                    console.warn('No recorded chunks available.');
+                    console.log("No recording is currently active.");
+                    reject(new Error("No recording is currently active."));
                 }
             } else {
-                console.log("No recording is currently active.");
+                cancelRecording();
+                reject(new Error("Recording cancelled."));
             }
-        } else {
-            cancelRecording();
-        }
-    };
+        });
+    }, [mediaRecorder, sendDataToServer]);
 
-    const cancelRecording = () => {
+    const cancelRecording = useCallback(() => {
         const confirmCancel = window.confirm('녹음을 취소하시겠습니까?');
         if (confirmCancel) {
+            chunksRef.current = [];
             if (mediaRecorder && isRecording) {
-                setShouldSendData(false);  // Ensure data is not sent
                 mediaRecorder.stop();
                 setIsRecording(false);
-                setChunks([]); // 모든 청크 초기화
-                setMeasuringText('측정이 취소되었습니다.');
                 console.log("Recording canceled");
-            } else {
-                console.log("No recording to cancel.");
             }
+        } else {
+            console.log("No recording to cancel.");
         }
-    };
+    }, [isRecording, mediaRecorder]);
 
     useEffect(() => {
         let timer;
@@ -159,8 +149,6 @@ const Cyclesound = () => {
 
         return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
     };
-
-    const [shouldSendData, setShouldSendData] = useState(false);
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
@@ -189,7 +177,7 @@ const Cyclesound = () => {
                         </>
                     )}</span>
                 </div>
-                <button className="play-button" onClick={isRecording ? stopRecording : startRecording}>
+                <button className="play-button" onClick={isRecording ? () => stopRecording().catch(console.error) : startRecording}>
                     <img src={isRecording ? stopIcon : startIcon} alt={isRecording ? 'Stop' : 'Start'} />
                 </button>
             </main>
