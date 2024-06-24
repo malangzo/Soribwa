@@ -27,7 +27,8 @@
     border: 5px solid #000000;
     border-radius: 50%;
     background-color: transparent;
-    transition: background-color 0.3s ease; /* 부드러운 색상 전환 */
+    transition: background-color 0.3s ease;
+    /* 부드러운 색상 전환 */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -36,7 +37,7 @@
 }
 
 .circle.recording {
-    border: 5px solid #FF3838; 
+    border: 5px solid #FF3838;
 }
 
 .measuring-text,
@@ -49,8 +50,8 @@
     font-size: 1.5em;
     font-weight: bold;
     color: #000000;
-    width: 100%; 
-    text-align: center; 
+    width: 100%;
+    text-align: center;
 }
 
 
@@ -65,4 +66,13 @@
 
 .cyclegraph {
     background-color: #FFFFFF;
+}
+
+.graph-image {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

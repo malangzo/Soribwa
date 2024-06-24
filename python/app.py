@@ -27,6 +27,10 @@ from database import db_conn
 from models import CycleData
 from dotenv import load_dotenv
 import csv
+from io import BytesIO, StringIO
+import base64
+from pydantic import BaseModel
+from sqlalchemy import create_engine, select, desc
 
 # BASE_DIR 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
@@ -149,44 +153,86 @@ async def cycle_dataInsert(file_uuid: str, user_uuid: str, tsv_data: str):
     #await cycle_drawGraph(file_uuid=file_uuid)
     return {"STATUS": 200, "RESULT": {"data" : result}}
     
-@app.post('/cycle/draw-graph')
-async def cycle_drawGraph(file_uuid: str):
-    if file_uuid is None:
-        return "file_uuid is None"
-    else:
-        try:
-            tsv_data = session.query(CycleData.tsv).filter(CycleData.file_uuid == file_uuid).first()[0]
-            tsv_str = tsv_data.decode('utf-8')
-            tsv_file = StringIO(tsv_str)
-            tsv_reader = csv.reader(tsv_file, delimiter='\t')
+# @app.post('/cycle/draw-graph')
+# async def cycle_drawGraph(file_uuid: str):
+#     if file_uuid is None:
+#         return "file_uuid is None"
+#     else:
+#         try:
+#             tsv_data = session.query(CycleData.tsv).filter(CycleData.file_uuid == file_uuid).first()[0]
+#             tsv_str = tsv_data.decode('utf-8')
+#             tsv_file = StringIO(tsv_str)
+#             tsv_reader = csv.reader(tsv_file, delimiter='\t')
             
-            next(tsv_reader)
+#             next(tsv_reader)
             
-            labels = []
-            times = []
-            decibels = []
-            for row in tsv_reader:
-                label, time, decibel = row
-                labels.append(label)
-                decibels.append(int(decibel))
+#             labels = []
+#             times = []
+#             decibels = []
+#             for row in tsv_reader:
+#                 label, time, decibel = row
+#                 labels.append(label)
+#                 decibels.append(int(decibel))
             
-            plt.scatter(decibels, labels)  
-            plt.xlabel('Decibel')       
-            plt.ylabel('Label')          
-            plt.title('My room')
+#             plt.scatter(decibels, labels)  
+#             plt.xlabel('Decibel')       
+#             plt.ylabel('Label')          
+#             plt.title('My room')
             
-            plt.savefig('../nodejs/public/images/img_buf.png')
+#             #plt.savefig('../nodejs/public/images/img_buf.png')
             
-            img_buf = io.BytesIO()
-            img_buf.seek(0)
+#             img_buf = io.BytesIO()
+#             img_buf.seek(0)
             
 
-            return {"STATUS": 200, "RESULT": {"MESSAGE": "Graph drawn successfully"}, "IMAGE": img_buf}
-        except Exception as e:
-            print(f"Error during graph drawing: {e}")
-            return {"STATUS": 500, "RESULT": {"MESSAGE": "Error during graph drawing"}}
-        finally:
-            session.close()
+#             return {"STATUS": 200, "RESULT": {"MESSAGE": "Graph drawn successfully"}, "IMAGE": img_buf}
+#         except Exception as e:
+#             print(f"Error during graph drawing: {e}")
+#             return {"STATUS": 500, "RESULT": {"MESSAGE": "Error during graph drawing"}}
+#         finally:
+#             session.close()
+
+
+@app.get('/cycle/draw-graph')
+async def cycle_drawGraph():
+    try:
+        file_uuid = session.query(CycleData).order_by(desc(CycleData.file_uuid)).first()
+        file_uuid = file_uuid.file_uuid
+        tsv_data = session.query(CycleData.tsv).filter(CycleData.file_uuid == file_uuid).first()[0]
+        tsv_str = tsv_data.decode('utf-8')
+        
+        # TSV 데이터 파싱
+        labels = []
+        decibels = []
+        with StringIO(tsv_str) as tsv_file:
+            tsv_reader = csv.reader(tsv_file, delimiter='\t')
+            next(tsv_reader)  # Header skip
+            for row in tsv_reader:
+                label, _, decibel = row
+                labels.append(label)
+                decibels.append(int(decibel))
+        
+        # 그래프 그리기
+        plt.figure()
+        plt.scatter(decibels, labels)
+        plt.xlabel('Decibel')
+        plt.ylabel('Label')
+        plt.title('My room')
+
+        # 이미지를 Base64로 변환하여 반환
+        img_buf = BytesIO()
+        plt.savefig(img_buf, format='png')
+        img_buf.seek(0)
+        img_base64 = base64.b64encode(img_buf.getvalue()).decode('utf-8')
+        
+        plt.close()  # 그래프 종료
+        
+        return img_base64
+    
+    except Exception as e:
+        print(f"Error during graph drawing: {e}")
+        raise HTTPException(status_code=500, detail="Error during graph drawing")
+    
 
 @app.get('/cycle/graph')
 async def cycle_graph():
