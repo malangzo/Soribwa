@@ -25,7 +25,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <button className="back-button-black" onClick={handleBackButtonClick}>
                     <img src={backIcon} alt="Menu" />
                 </button>
-                <div class="user-info">
+                <div className="user-info">
                     <img src={userAvatar} alt="UserAvatar" />
                     <p>{username} 님,<br />안녕하세요!</p>
                 </div>

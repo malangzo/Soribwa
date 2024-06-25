@@ -5,8 +5,8 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import axios from 'axios';
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css"; 
-import { FaSearch } from 'react-icons/fa';
+import "react-datepicker/dist/react-datepicker.css"; // DatePicker의 스타일 가져오기
+import { FaSearch } from 'react-icons/fa'; // FaSearch 아이콘 가져오기
 
 const nodejs = process.env.REACT_APP_NODEAPI;
 
@@ -22,26 +22,14 @@ const Graph = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  function formatDate(date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}${month}${day}`;
-  }
-
   const fetchGraph = async () => {
     setLoading(true);
     setError(null);
     try {
-      const formattedStartDate = startDate ? formatDate(startDate) : null;
-      const formattedEndDate = endDate ? formatDate(endDate) : null;
-      console.log(formattedStartDate, formattedEndDate);
-      
       const response = await axios.post(`${nodejs}/cycle/daygraph`, {
-        startdate: formattedStartDate,
-        enddate: formattedEndDate,
+        start: startDate ? startDate.toISOString().split('T')[0] : null,
+        end: endDate ? endDate.toISOString().split('T')[0] : null,
       });
-  
       if (response.status === 200) {
         const img_base64 = `data:image/png;base64,${response.data.image}`;
         setImage(img_base64);
@@ -56,7 +44,6 @@ const Graph = () => {
       setLoading(false);
     }
   };
-  
 
   const setChangeDate = (dates) => {
     const [start, end] = dates;

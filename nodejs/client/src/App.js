@@ -34,7 +34,9 @@ const App = () => {
           <Link to="/Cyclesound">
             <GridItem src={houseImg} alt="내 공간 소음 측정" text="내 공간 소음 측정" />
           </Link>
-          <GridItem src={graphImg} alt="측정 그래프 보기" text="측정 그래프 보기" />
+          <Link to="/Graph">
+            <GridItem src={graphImg} alt="측정 그래프 보기" text="측정 그래프 보기" />
+          </Link>
           <a href={Soundmap} rel="noopener noreferrer">
             <GridItem src={mapImg} alt="소음 지도" text="소음 지도" />
           </a>
