@@ -54,11 +54,15 @@ app.post('/cycle/daygraph', async (req, res) => {
                 'Content-Type': 'application/json'
             }
         });
-        console.log(response);
+
 
         if (response.status === 200) {
             const data = response.data;
-            return res.status(200).json({ status: 200, message: 'Graph drawn successfully', image: data.image });
+            if(data.message == 'No data'){ 
+                return res.status(200).json({ status: 200, message: 'No data' });
+            } else {
+                return res.status(200).json({ status: 200, message: 'Graph drawn successfully', image: data.image });
+            }
         } else {
             const errorData = response.data;
             const errorMessage = errorData.detail || 'Error during fetch';

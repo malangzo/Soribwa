@@ -35,16 +35,27 @@ const Graph = () => {
     try {
       const formattedStartDate = startDate ? formatDate(startDate) : null;
       const formattedEndDate = endDate ? formatDate(endDate) : null;
-      console.log(formattedStartDate, formattedEndDate);
-      
+
+      if (!formattedStartDate || !formattedEndDate) {
+        setError('Please select both start and end dates.');
+        setLoading(false);
+        return;
+      }
+
       const response = await axios.post(`${nodejs}/cycle/daygraph`, {
         startdate: formattedStartDate,
         enddate: formattedEndDate,
       });
-  
+
       if (response.status === 200) {
-        const img_base64 = `data:image/png;base64,${response.data.image}`;
-        setImage(img_base64);
+        if (response.data.message === 'No data') {
+          setImage(null); 
+          setError('No data');
+        } else {
+          const img_base64 = `data:image/png;base64,${response.data.image}`;
+          setImage(img_base64);
+          setError(null);
+        }
       } else {
         const errorMessage = response.data.message || 'Error during fetch';
         setError(errorMessage);
@@ -56,7 +67,6 @@ const Graph = () => {
       setLoading(false);
     }
   };
-  
 
   const setChangeDate = (dates) => {
     const [start, end] = dates;
@@ -88,6 +98,7 @@ const Graph = () => {
         {isLoading && <p>Loading...</p>}
         {error && <p className="error">{error}</p>}
         {image && <img src={image} alt="Graph" className="graph-image" />}
+        {!isLoading && !error && !image && startDate && endDate && <p>No data</p>}
       </main>
     </div>
   );

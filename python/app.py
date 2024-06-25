@@ -218,6 +218,9 @@ async def cycle_draw_day_graph(request: Request):
             func.substr(CycleData.file_uuid, 1, 8).between(startdate, enddate)
         ).all()
 
+        if not file_uuids:
+            return {"status": 200, "message": "No data"}
+        
         for file_uuid in file_uuids:
             tsv_data = session.query(CycleData.tsv).filter(CycleData.file_uuid == file_uuid[0]).first()
 
