@@ -101,6 +101,12 @@ async def cycle_recordAnalyze(request: Request, file: UploadFile = UploadFile(..
         test_feature = extract_feature(file_name)
         print(test_feature)
         
+        y, sr = librosa.load(file_name)
+        S = np.abs(librosa.stft(y))
+        dB = librosa.amplitude_to_db(S, ref=1e-05)
+        dBm = str(int(np.mean(dB)))
+        print(dBm, 'dB')
+        
         # 업로드 완료 후 임시 파일 삭제
         os.remove(f'{file_name}')
 
@@ -113,7 +119,7 @@ async def cycle_recordAnalyze(request: Request, file: UploadFile = UploadFile(..
         else:
             print("Failed to extract features from the file.")
         
-        decibel = 40
+        decibel = dBm
         await cycle_makeTsv(predicted_class_label, timestamp, decibel)
         
         return {"STATUS": 200, "RESULT": {"analyze_result": predicted_class_label, "time" : timestamp, "decibel" : decibel, "MESSAGE" : "All result is successfully analyze"}}
@@ -197,6 +203,49 @@ async def cycle_dataInsert(file_uuid: str, user_uuid: str, tsv_data: str):
 async def cycle_drawGraph():
     try:
         file_uuid = session.query(CycleData).order_by(desc(CycleData.file_uuid)).first()
+        print(file_uuid.file_uuid)
+        file_uuid = file_uuid.file_uuid
+        tsv_data = session.query(CycleData.tsv).filter(CycleData.file_uuid == file_uuid).first()[0]
+        tsv_str = tsv_data.decode('utf-8')
+        
+        # TSV 데이터 파싱
+        labels = []
+        decibels = []
+        with StringIO(tsv_str) as tsv_file:
+            tsv_reader = csv.reader(tsv_file, delimiter='\t')
+            next(tsv_reader)  # Header skip
+            for row in tsv_reader:
+                label, _, decibel = row
+                labels.append(label)
+                decibels.append(int(decibel))
+        
+        # 그래프 그리기
+        plt.figure()
+        plt.scatter(decibels, labels)
+        plt.xlabel('Decibel')
+        plt.ylabel('Label')
+        plt.title('My room')
+
+        # 이미지를 Base64로 변환하여 반환
+        img_buf = BytesIO()
+        plt.savefig(img_buf, format='png')
+        img_buf.seek(0)
+        img_base64 = base64.b64encode(img_buf.getvalue()).decode('utf-8')
+        
+        plt.close()  # 그래프 종료
+        
+        return img_base64
+    
+    except Exception as e:
+        print(f"Error during graph drawing: {e}")
+        raise HTTPException(status_code=500, detail="Error during graph drawing")
+    
+    
+@app.get('/cycle/draw-day-graph')
+async def cycle_drawDayGraph():
+    try:
+        file_uuid = session.query(CycleData).order_by(desc(CycleData.file_uuid)).first()
+        print(file_uuid.file_uuid)
         file_uuid = file_uuid.file_uuid
         tsv_data = session.query(CycleData.tsv).filter(CycleData.file_uuid == file_uuid).first()[0]
         tsv_str = tsv_data.decode('utf-8')

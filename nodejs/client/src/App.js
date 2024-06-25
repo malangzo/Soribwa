@@ -19,6 +19,8 @@ const App = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
+  const Soundmap = process.env.REACT_APP_YUJUNG;
+  const Livesound = process.env.REACT_APP_JAEHYUCK;
 
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
@@ -26,12 +28,16 @@ const App = () => {
     <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>
         <div className="grid">
-          <GridItem src={soundImg} alt="실시간 소음 측정" text="실시간 소음 측정" />
+          <a href={Livesound} rel="noopener noreferrer">
+            <GridItem src={soundImg} alt="실시간 소음 측정" text="실시간 소음 측정" />
+          </a>
           <Link to="/Cyclesound">
             <GridItem src={houseImg} alt="내 공간 소음 측정" text="내 공간 소음 측정" />
           </Link>
           <GridItem src={graphImg} alt="측정 그래프 보기" text="측정 그래프 보기" />
-          <GridItem src={mapImg} alt="소음 지도" text="소음 지도" />
+          <a href={Soundmap} rel="noopener noreferrer">
+            <GridItem src={mapImg} alt="소음 지도" text="소음 지도" />
+          </a>
         </div>
       </main>
     </div>

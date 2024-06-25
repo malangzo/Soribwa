@@ -21,7 +21,7 @@ const CycleResult = () => {
   useEffect(() => {
     const fetchGraph = async () => {
       try {
-        const response = await axios.get(`${nodejs}/cycle/graph`);
+        const response = await axios.get(`${nodejs}/cycle/daygraph`);
 
         if (response.status === 200) {
           const img_base64 = `data:image/png;base64,${response.data.image}`;

@@ -44,5 +44,30 @@ app.get('/cycle/graph', async (req, res) => {
     }
 });
 
+app.get('/cycle/daygraph', async (req, res) => {
+
+    try {
+        const response = await axios.get(`${fastapi}/cycle/draw-day-graph`);
+
+        if (response.status === 200) {
+            const data = response.data;
+            //const img_base64 = `data:image/png;base64,${data}`;
+            //const img_buffer = Buffer.from(img_base64, 'base64');
+            //fs.writeFileSync(imageFilePath, img_buffer);
+
+
+            return res.status(200).json({ status: 200, message: 'Graph drawn successfully', image: data });
+        } else {
+           
+            const errorData = response.data;
+            const errorMessage = errorData.detail || 'Error during fetch';
+            return res.status(response.status).json({ status: response.status, message: errorMessage });
+        }
+    } catch (error) {
+        console.error('Error during fetch:', error);
+        return res.status(500).json({ status: 500, message: 'Error during fetch' });
+    }
+});
+
 
 module.exports = app;

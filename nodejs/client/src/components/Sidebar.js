@@ -8,8 +8,10 @@ import settingsIcon from '../images/etc.png';
 import backIcon from '../images/backIcon_black.png';
 import userAvatar from '../images/userAvatar.jpg';
 
-import { Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
 
+const Livesound = process.env.REACT_APP_JAEHYUCK;
+const Soundmap = process.env.REACT_APP_YUJUNG;
 const Sidebar = ({ isOpen, onClose }) => {
     const username = '유지민'; // 사용자 이름
 
@@ -32,25 +34,25 @@ const Sidebar = ({ isOpen, onClose }) => {
             <nav>
                 <ul>
                     <li>
-                        <a href="#">
+                        <a href={Livesound} rel="noopener noreferrer">
                             <img src={soundIcon} alt="실시간 소음 측정" />
                             실시간 소음 측정
                         </a>
                     </li>
-                    <Link to="/Cyclesound">
-                        <a href="#">
+                    <li>
+                        <a href="/Cyclesound">
                             <img src={houseIcon} alt="내 공간 소음 측정" />
                             내 공간 소음 측정
                         </a>
-                    </Link>
+                    </li>
                     <li>
-                        <a href="#">
+                        <a href="/Graph">
                             <img src={graphIcon} alt="측정 그래프 보기" />
                             측정 그래프 보기
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href={Soundmap} rel="noopener noreferrer">
                             <img src={mapIcon} alt="소음 지도" />
                             소음 지도
                         </a>
