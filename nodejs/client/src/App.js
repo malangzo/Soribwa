@@ -2,15 +2,11 @@ import React, { useState } from 'react';
 import './App.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import GridItem from './components/GridItem';
-
-import soundImg from './images/sound.png';
-import houseImg from './images/house.png';
-import graphImg from './images/graph.png';
-import mapImg from './images/map.png';
-
+import Footer from './components/Footer';
 import { Link } from "react-router-dom";
 
+import conversationIcon from './images/conversation.png';
+import livesoundIcon from './images/livesound.png';
 
 const App = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -19,29 +15,30 @@ const App = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  const Soundmap = process.env.REACT_APP_YUJUNG;
-  const Livesound = process.env.REACT_APP_JAEHYUCK;
-
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
-    <Header toggleSidebar={toggleSidebar} />
-    <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
+      <Header toggleSidebar={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>
-        <div className="grid">
-          <a href={Livesound} rel="noopener noreferrer">
-            <GridItem src={soundImg} alt="실시간 소음 측정" text="실시간 소음 측정" />
-          </a>
-          <Link to="/Cyclesound">
-            <GridItem src={houseImg} alt="내 공간 소음 측정" text="내 공간 소음 측정" />
+        <div className="notification">
+          공지사항 업데이트 버전...
+        </div>
+        <div className="scroll-container">
+          <Link to="/Livesound">
+            <div className="scroll-button">
+              <img src={livesoundIcon} alt="실시간 소음 분석" />
+              <p>실시간 소음 분석</p>
+            </div>
           </Link>
-          <Link to="/Graph">
-            <GridItem src={graphImg} alt="측정 그래프 보기" text="측정 그래프 보기" />
+          <Link to="/Conversation">
+            <div className="scroll-button">
+              <img src={conversationIcon} alt="대화 감정 분석" />
+              <p>대화 감정 분석</p>
+            </div>
           </Link>
-          <a href={Soundmap} rel="noopener noreferrer">
-            <GridItem src={mapImg} alt="소음 지도" text="소음 지도" />
-          </a>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

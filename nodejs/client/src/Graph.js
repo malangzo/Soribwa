@@ -3,6 +3,7 @@ import './App.css';
 import './Cycle.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import Footer from './components/Footer';
 import axios from 'axios';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; 
@@ -37,7 +38,7 @@ const Graph = () => {
       const formattedEndDate = endDate ? formatDate(endDate) : null;
 
       if (!formattedStartDate || !formattedEndDate) {
-        setError('Please select both start and end dates.');
+        setError('날짜를 입력해주세요.');
         setLoading(false);
         return;
       }
@@ -79,7 +80,6 @@ const Graph = () => {
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>
-        <h2>측정 그래프</h2>
         <div className="date-picker-container">
           <DatePicker
             selectsRange={true}
@@ -100,6 +100,7 @@ const Graph = () => {
         {image && <img src={image} alt="Graph" className="graph-image" />}
         {!isLoading && !error && !image && startDate && endDate && <p>No data</p>}
       </main>
+      <Footer />
     </div>
   );
 };

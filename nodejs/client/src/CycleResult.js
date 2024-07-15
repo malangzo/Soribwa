@@ -4,6 +4,7 @@ import './App.css';
 import './Cycle.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import Footer from './components/Footer';
 import axios from 'axios';
 
 const nodejs = process.env.REACT_APP_NODEAPI;
@@ -46,11 +47,11 @@ const CycleResult = () => {
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>
-        <h2>측정 결과</h2>
         {isLoading && <p>Loading...</p>}
         {error && <p className="error">{error}</p>}
         {image && <img src={image} alt="Graph" className="graph-image" />}
       </main>
+      <Footer />
     </div>
   );
 };

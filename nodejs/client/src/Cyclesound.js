@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './Cycle.css';
 import Sidebar from './components/Sidebar';
-import sideBar from './images/sideBar.png';
-import backIcon from './images/backIcon.png';
-import startIcon from './images/startIcon.png';
-import stopIcon from './images/stopIcon.png';
+import sidebarIcon from './images/main_left.png';
+import backIcon from './images/back.png';
+import startIcon from './images/start.png';
+import stopIcon from './images/stop.png';
+import soribwa from './images/soribwa.png';
 import { Link, useNavigate } from "react-router-dom";
 
 const Cyclesound = () => {
@@ -60,14 +61,17 @@ const Cyclesound = () => {
         const timestamp = dateObject.toLocaleString('ko-KR', options);
         formData.append('timestamp', timestamp);
 
+        const nodejs = process.env.REACT_APP_NODEAPI;
         const fastapi = process.env.REACT_APP_FASTAPI;
-        console.log('Sending data to server:', fastapi);
+        console.log('Sending data to server:', nodejs);
 
         try {
-            const response = await fetch(`${fastapi}/cycle/record-analyze`, {
+            const response = await fetch(`${nodejs}/audio_test`, {
                 method: 'POST',
                 body: formData,
             });
+
+            console.log('Response:', response);
             
 
             if (!response.ok) {
@@ -154,10 +158,14 @@ const Cyclesound = () => {
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
             <header className="header custom-header">
-                <button className="menu-button" onClick={toggleSidebar}>
-                    <img src={sideBar} alt="Menu" />
-                </button>
-                <h1>소리봐</h1>
+                <div className="header-content">
+                    <button className="menu-button" onClick={toggleSidebar}>
+                        <img src={sidebarIcon} alt="Menu" />
+                    </button>
+                    <div className='menu-yellow'>
+                        <img src={soribwa} alt="soribwa" />
+                    </div>
+                </div>
                 <Link to="/" className="back-link">
                     <button className="back-button">
                         <img src={backIcon} alt="Back" />
@@ -167,7 +175,6 @@ const Cyclesound = () => {
             </header>
 
             <main className='cyclemain'>
-                <h2>내 공간 소음 측정</h2>
                 <div className={`circle ${isRecording ? 'recording' : ''}`}>
                     <span className="measuring-text">{isRecording ? measuringText : ''}</span>
                     <span className="recording-time">{isRecording && (

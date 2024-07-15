@@ -16,7 +16,13 @@ app.use(cors());
 
 require('dotenv').config();
 
-const fastapi = process.env.FASTAPI;
+const storage = multer.memoryStorage({})
+
+const upload = multer({
+    storage: storage
+})
+
+const fastapi = process.env.Fastapi;
 
 
 app.get('/cycle/graph', async (req, res) => {
@@ -73,6 +79,26 @@ app.post('/cycle/daygraph', async (req, res) => {
         return res.status(500).json({ status: 500, message: 'Error during fetch' });
     }
 });
+
+app.post('/audio_test', upload.single("file"), async (req, res) => {
+
+    const formData = new FormData();
+    formData.append("file", req.file.buffer, { filename: req.file.originalname });
+    formData.append("timestamp", req.body.timestamp);
+
+
+    await axios.post(`${fastapi}/cycle/record-analyze`, formData, {
+    })
+    .then(function (result) {
+        console.log("result status check: ", result.status);
+        console.log("result data check: ", result.data);
+        return res.status(200).json({ status: 200, data: result.data });
+        
+    }).catch(function (error) {
+        console.log(error)
+    })
+
+})
 
 
 

@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Sidebar.css';
-import soundIcon from '../images/sound.png';
-import houseIcon from '../images/house.png';
-import graphIcon from '../images/graph.png';
-import mapIcon from '../images/map.png';
-import settingsIcon from '../images/etc.png';
-import backIcon from '../images/backIcon_black.png';
-import userAvatar from '../images/userAvatar.jpg';
+import back_whiteIcon from '../images/back_white.png';
+import conversation_sidebarIcon from '../images/conversation_sidebar.png';
+import livesound_sidebarIcon from '../images/livesound_sidebar.png';
+import setting_sidebarIcon from '../images/setting_sidebar.png';
+import data_sidebarIcon from '../images/data_sidebar.png';
+import map_sidebarIcon from '../images/map_sidebar.png';
+import userAvatarDefault from '../images/userAvatar.png'; 
 
 //import { Link } from "react-router-dom";
 
-const Livesound = process.env.REACT_APP_JAEHYUCK;
-const Soundmap = process.env.REACT_APP_YUJUNG;
+
 const Sidebar = ({ isOpen, onClose }) => {
-    const username = '유지민'; // 사용자 이름
+    const [userAvatar, setUserAvatar] = useState(sessionStorage.getItem("img") ? sessionStorage.getItem("img"):userAvatarDefault);
+    const [userName, setUserName] = useState(sessionStorage.getItem("name") ? sessionStorage.getItem("name"):"Undefined");
 
     const handleBackButtonClick = () => {
         onClose();
@@ -22,45 +22,46 @@ const Sidebar = ({ isOpen, onClose }) => {
     return (
         <div className={`sidebar ${isOpen ? 'open' : ''}`}>
             <div className="sidebar-header">
-                <button className="back-button-black" onClick={handleBackButtonClick}>
-                    <img src={backIcon} alt="Menu" />
+                <button className="back-button-white" onClick={handleBackButtonClick}>
+                    <img src={back_whiteIcon} alt="Menu" />
                 </button>
                 <div className="user-info">
                     <img src={userAvatar} alt="UserAvatar" />
-                    <p>{username} 님,<br />안녕하세요!</p>
+                    <p>{userName} 님,<br />안녕하세요!</p>
                 </div>
             </div>
 
             <nav>
                 <ul>
                     <li>
-                        <a href={Livesound} rel="noopener noreferrer">
-                            <img src={soundIcon} alt="실시간 소음 측정" />
-                            실시간 소음 측정
+                        <a href="/Livesound">
+                            <img src={livesound_sidebarIcon} alt="실시간 소음 분석" />
+                            실시간 소음 분석
                         </a>
                     </li>
                     <li>
-                        <a href="/Cyclesound">
-                            <img src={houseIcon} alt="내 공간 소음 측정" />
-                            내 공간 소음 측정
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/Graph">
-                            <img src={graphIcon} alt="측정 그래프 보기" />
-                            측정 그래프 보기
-                        </a>
-                    </li>
-                    <li>
-                        <a href={Soundmap} rel="noopener noreferrer">
-                            <img src={mapIcon} alt="소음 지도" />
-                            소음 지도
+                        <a href="/Conversation">
+                            <img src={conversation_sidebarIcon} alt="대화 감정 분석" />
+                            대화 감정 분석
                         </a>
                     </li>
                     <li className="spacer"></li>
                     <li>
-                        <a href="#">
-                            <img src={settingsIcon} alt="설정" />
+                        <a href="/SoundMap">
+                            <img src={map_sidebarIcon} alt="소음 지도" />
+                            소음 지도
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Graph">
+                            <img src={data_sidebarIcon} alt="내 데이터" />
+                            내 데이터
+                        </a>
+                    </li>
+                    <li className="spacer"></li>
+                    <li>
+                        <a href="/Setting">
+                            <img src={setting_sidebarIcon} alt="설정" />
                             설정
                         </a>
                     </li>
@@ -71,5 +72,3 @@ const Sidebar = ({ isOpen, onClose }) => {
 };
 
 export default Sidebar;
-
-

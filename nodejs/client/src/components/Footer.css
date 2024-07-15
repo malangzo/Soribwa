@@ -1,0 +1,40 @@
+@import url('https://static.toss.im/tps/main.css');
+@import url('https://static.toss.im/tps/others.css');
+
+* {
+  font-family: 'Toss Product Sans';
+}
+
+footer {
+  font-family: 'Toss Product Sans';
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  background-color: #FFFFFF;
+  color: white;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  margin-left: 10px;
+}
+
+footer a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #0532A9;
+}
+
+footer a img {
+  width: 20px;
+  height: 20px;
+}
+
+footer a p {
+  margin: 5px 0 0;
+  font-size: 0.8em;
+  color: #0532A9;
+  font-weight: bold;
+}

@@ -1,9 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500&display=swap');
+@import url('https://static.toss.im/tps/main.css');
+@import url('https://static.toss.im/tps/others.css');
+
+* {
+  font-family: 'Toss Product Sans';
+  text-decoration-line: none;
+}
 
 body {
   margin: 0;
   padding: 0;
-  font-family: "IBM Plex Sans KR", sans-serif;
+  font-family: 'Toss Product Sans';
   background-color: #f0f0f0;
 }
 
@@ -11,84 +17,221 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  position: relative; /* 추가된 부분 */
-}
-
-header {
-  color: white;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 1.2em;
-}
-
-a {
-  color: white;
-  text-decoration: none;
-  margin: 0 5px;
+  position: relative;
 }
 
 main {
   flex-grow: 1;
-  padding: 10px;
   display: flex;
   flex-direction: column;
+  padding: 10px;
   align-items: center;
   background-color: #FFFFFF;
 }
 
-.grid {
-  display: grid;
-  text-decoration: none;
-  grid-template-columns: 1fr;
+.notification {
+  background-color: #f8d7da;
+  color: #000000;
+  margin: 0px 10px 10px 10px;
+  border-radius: 15px;
+  padding: 12px 185px 15px 20px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+}
+
+.scroll-button {
+  min-width: 150px;
+  min-height: 90px;
+  margin: 10px;
+  background-color: #072B8C;
+  color: white;
+  text-align: center;
+  border-radius: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 90px 90px;
+}
+
+.scroll-button img {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px; 
+  height: 180px; 
+}
+
+.scroll-button p {
+  position: absolute;
+  bottom: 20px; 
+  left: 20px; 
+  width: calc(100% - 10px); 
+  color: #FFFFFF;
+  text-align: left; 
+  font-size: 1.3em;
+  font-weight: bold;
+  margin: 0; 
+}
+
+
+.data-container {
+  display: flex;
   gap: 10px;
-  padding: 10px;
-  flex-grow: 1;
+  width: 100%;
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.data-button {
+  width: 100px;
+  height: 100px;
+  background-color: #EBF3FF;
+  border-radius: 15px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.data-button img {
+  width: 50px;
+  height: 50px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  
+}
+
+.data-button p {
+  color: #000000;
+  text-align: center;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+h5 {
+  width: 100%;
+  margin-left: 21px;
+  text-align: left;
+  color: #000000;
+  margin-bottom: 10px;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.setting {
   width: 100%;
 }
 
-.container.blur main {
-  filter: blur(5px);
+.setting p {
+  margin-bottom: 30px;
+  color: #072B8C;
+  font-weight: bold;
+  font-size: 1.2em;
 }
 
-.datepicker{
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: 80%;
-  padding:8px 20px;
-  border-width: 1px;
-  border-radius: 4px;
+.setting-buttons p {
+  font-size: 13px;
+  color: #8F8F8F;
+  text-align: left;
+  margin-left: 10px;
+  margin-bottom: 10px;
+
 }
 
-.date-picker-container {
+.setting-buttons button {
+  width: 100%;
+  padding: 15px;
+  background-color: #EBF3FF;
+  border: none;
+  font-size: 1em;
+  color: #000000;
+  text-align: left;
+  font-weight: bold;
+}
+
+.user-info {
   display: flex;
   align-items: center;
-  margin-top: 50px;
+  margin: 10px 0;
 }
 
-.search-button {
-  padding: 8px 16px;
-  margin-left: 15px;
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 4px;
+.user-info .avatar {
+  width: 110px;
+  height: 110px;
+}
+
+.info-text {
+  display: flex;
+  flex-direction: column; 
+}
+
+.info-text p {
+  margin: 0;
+  color: #000000;
+  font-size: 15px;
+}
+
+.modify-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+  gap: 20px;
+}
+
+.modify-button {
+  padding: 10px 20px;
+  background-color: #EBF3FF;
+  border-radius: 25px;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
 }
 
-.search-button:hover {
-  background-color: #0056b3;
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-@media (min-width: 768px) {
-  .grid {
-    gap: 20px;
-    padding: 20px;
-  }
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.modal-buttons button {
+  padding: 8px 20px;
+  background-color: #EBF3FF;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  border: none;
+}
+
+
+
+
+
+.container.blur main {
+  filter: blur(5px);
 }

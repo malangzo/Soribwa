@@ -1,7 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500&display=swap');
+@import url('https://static.toss.im/tps/main.css');
+@import url('https://static.toss.im/tps/others.css');
 
+* {
+  font-family: 'Toss Product Sans';
+}
 .custom-header {
-    background-color: #3ABEF9;
+    background-color: #EBF3FF;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+}
+
+.menu-yellow img {
+    width: 55px;
+    height: auto;
+    margin-left: 10px;
 }
 
 .menu-button,
@@ -13,9 +28,10 @@
 }
 
 .cyclemain {
-    background-color: #3ABEF9;
-    font-family: "IBM Plex Sans KR", sans-serif;
-    color: #000000;
+    background-color: #EBF3FF;
+    font-family: 'Toss Product Sans';
+    color: #0532A9;
+    text-decoration-line: none;
 }
 
 .circle {
@@ -24,7 +40,7 @@
     margin: 0 auto;
     width: 250px;
     height: 250px;
-    border: 5px solid #000000;
+    border: 5px solid #0532A9;
     border-radius: 50%;
     background-color: transparent;
     transition: background-color 0.3s ease;
@@ -37,7 +53,7 @@
 }
 
 .circle.recording {
-    border: 5px solid #FF3838;
+    border: 5px solid #FEC6C7;
 }
 
 .measuring-text,
@@ -54,6 +70,14 @@
     text-align: center;
 }
 
+/* .btnplay {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    background: none;
+    border: none;
+    transform: translate(-50%, -50%);
+} */
 
 .play-button {
     position: absolute;
@@ -75,4 +99,58 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.date-picker-container {
+    display: flex;
+    margin-top: 50px;
+}
+
+
+
+/* ---------------------------------------------------------------------------  */
+
+
+.main-body {
+    background-color: #EBF3FF;
+}
+
+.image_circle {
+    position: relative;
+    top: 10%;
+    margin: 0 auto;
+    width: 260px;
+    height: 260px;
+}
+
+#label_image {
+    position: absolute;
+    top: 50%;
+    left: 50%; 
+    transform: translate(-50%, -50%);
+}
+
+#label_img {
+    width: 100px;
+    height: 100px;
+}
+
+#label_case {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#label_text {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+    color: #000000;
+    font-size: 1.3em;
+    font-weight: bold;
 }

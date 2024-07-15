@@ -1,16 +1,19 @@
 import React from 'react';
 import './Header.css';
-import sideBar from '../images/sideBar.png';
-import backIcon from '../images/backIcon.png';
+import sidebarIcon from '../images/main_left.png';
+import backIcon from '../images/back.png';
+import soribwa from '../images/soribwa.png';
 import { Link } from "react-router-dom";
 
 const Header = ({ toggleSidebar }) => {
   return (
     <header className="header">
-      <button className="menu-button" onClick={toggleSidebar}>
-        <img src={sideBar} alt="Menu" />
-      </button>
-      <h1>소리봐</h1>
+      <div className="menu-logo">
+        <button className="menu-button" onClick={toggleSidebar}>
+          <img src={sidebarIcon} alt="Menu" />
+        </button>
+        <img src={soribwa} alt="Soribwa" className="soribwa-logo" />
+      </div>
       <Link to="/">
         <button className="back-button">
           <img src={backIcon} alt="Back" />

@@ -24,7 +24,7 @@ import json
 from starlette.requests import Request
 from datetime import datetime
 from database import db_conn
-from models import CycleData
+from models import CycleData, Realtime_log, User_info
 from dotenv import load_dotenv
 import csv
 from io import BytesIO, StringIO
@@ -76,7 +76,7 @@ app.add_middleware(
 
 @app.get('/test')
 async def test():
-    result = session.query(CycleData)
+    result = session.query(Realtime_log)
     return result.all()
 
 
@@ -201,6 +201,7 @@ async def cycle_drawGraph():
     except Exception as e:
         print(f"Error during graph drawing: {e}")
         raise HTTPException(status_code=500, detail="Error during graph drawing")
+
     
 from sqlalchemy import func
 @app.post('/cycle/draw-day-graph')
@@ -271,6 +272,14 @@ async def cycle_deleteAll():
     session.commit()
     result = session.query(CycleData).all()
     return result
+
+
+
+##################################################################
     
     
     
+@app.get("/getNoiseData")
+async def get_noise_data():
+    query = session.query(Realtime_log).all()
+    return query
