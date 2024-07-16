@@ -14,15 +14,18 @@ const App = () => {
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
+  
 
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>
+        <Link to="/NoticeList">
         <div className="notification">
           공지사항 업데이트 버전...
         </div>
+        </Link>
         <div className="scroll-container">
           <Link to="/Livesound">
             <div className="scroll-button">

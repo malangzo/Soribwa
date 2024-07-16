@@ -38,7 +38,7 @@ const Setting = () => {
             </Link>
             <button className='button'>마이크 볼륨 조절</button>
             <button className='button'>내 데이터</button>
-            
+            &nbsp;&nbsp;&nbsp;
             <p>User</p>
             <button className='button'>로그 아웃</button>
             <button className='button'>회원 탈퇴</button>

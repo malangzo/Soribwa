@@ -40,9 +40,8 @@ const Register = () => {
 
     return (
         <div className="fullscreen-container">
+            <div className="main-logo"><img src={soribwa_yellow} alt="Soribwa" className="soribwa-main-logo" /></div>
             <div className="login-main">
-                <img src={soribwa_yellow} alt="Soribwa" className="soribwa-main-logo" />
-                <p/>
                 <div className="input_case">
                     <input id="email" type="text" placeholder="EMAIL" onChange={userEmail}/><p/>
                     <input id="name" type="text" placeholder="NAME" onChange={userName}/><p/>

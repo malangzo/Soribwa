@@ -12,21 +12,35 @@
     height: 100vh;
     width: 100vw;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     background-color: #0532A9;
 }
+
+.main-logo {
+    flex: 0.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30%;
+  }
+  
+.login-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
 
 .login-main {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
     width: 100%;
     font-family: 'Toss Product Sans';
     font-weight: bold;
-    background-color: #0532A9;
 }
 
 #email, #name, #password {

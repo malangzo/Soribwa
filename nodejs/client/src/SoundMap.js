@@ -4,9 +4,10 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import KakaoMap from './Kakaomap';
+import MapInfo from './MapInfo';
 
 
-const Graph = () => {
+const SoundMap = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -19,6 +20,7 @@ const Graph = () => {
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>
+        <MapInfo />
         <KakaoMap />
       </main>
       <Footer />
@@ -26,4 +28,4 @@ const Graph = () => {
   );
 };
 
-export default Graph;
+export default SoundMap;

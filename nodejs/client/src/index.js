@@ -11,6 +11,10 @@ import Userinfo from './Userinfo';
 import Conversation from './Conversation';
 import Login from './LOGIN/Login';
 import Register from './LOGIN/Register';
+import NoticeList from './NOTICE/NoticeList';
+import NoticeWrite from './NOTICE/NoticeWrite';
+import NoticeEdit from './NOTICE/NoticeEdit';
+import NoticeContent from './NOTICE/NoticeContent';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -34,7 +38,13 @@ ReactDOM.createRoot(rootElement).render(
         <Route path='/Conversation' element={<Conversation />} />
         <Route path='/Login' element={<Login />} />
         <Route path='/Register' element={<Register />} />
+        <Route path='/NoticeList' element={<NoticeList />} />
+        <Route path='/NoticeWrite' element={<NoticeWrite />} />
+        <Route path='/NoticeEdit/:notice_no' element={<NoticeEdit />} />
+        <Route path='/NoticeContent/:notice_no' element={<NoticeContent />} />
       </Routes>
     </BrowserRouter>
   </GoogleOAuthProvider>
 );
+
+

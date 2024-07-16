@@ -5,6 +5,7 @@ import './Cycle.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
+import ConvInfo from './ConvInfo';
 
 import startIcon from './images/start.png';
 import stopIcon from './images/stop.png';
@@ -21,6 +22,7 @@ const Conversation = () => {
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
             <main>
+                <ConvInfo />
                 {/* <button className="play-button" onClick={isRecording ? () => stopRecording().catch(console.error) : startRecording}>
                     <img src={isRecording ? stopIcon : startIcon} alt={isRecording ? 'Stop' : 'Start'} />
                 </button> */}

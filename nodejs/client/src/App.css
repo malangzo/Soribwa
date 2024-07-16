@@ -130,7 +130,8 @@ h5 {
   margin-bottom: 30px;
   color: #072B8C;
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 20px;
+  margin-left: 10px;
 }
 
 .setting-buttons p {
@@ -228,7 +229,54 @@ h5 {
   border: none;
 }
 
+/* InfoButton.css */
+.info-button {
+  position: fixed;
+  top: 55px;
+  right: 15px;
+  background-color: #dae1f4; opacity: 0.8;
+  border: 3px solid #0532A9;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #0532A9;
+  text-align: center;
+  cursor: pointer;
+  z-index: 1000;
+}
 
+.info-popup {
+  position: fixed;
+  top: 70px;
+  background-color: #fff; opacity: 0.9;
+  border: 1px solid #0532A9;
+  padding: 10px;
+  width: 85%;
+  z-index: 1000;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.info-popup-content {
+  font-size: 14px;
+  text-align: center;
+}
+
+.info-popup-content ul {
+  list-style: none !important;
+  margin: 0;
+  padding: 0;
+}
+
+.info-popup-close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 25px;
+}
 
 
 

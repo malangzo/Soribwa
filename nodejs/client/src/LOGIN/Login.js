@@ -52,21 +52,21 @@ const Login = () => {
 
     return (
         <div className="fullscreen-container">
-            <div className="login-main">
-                <img src={soribwa_yellow} alt="Soribwa" className="soribwa-main-logo" />
-                <div className="input_case">
-                    <input id="email" type="text" placeholder="EMAIL" value={emailValue} onChange={userEmail} /><p />
-                    <input id="password" type="text" placeholder="PASSWORD" value={passwordValue} onChange={userPassword} /><p />
-                </div>
-                <div className="btn_case">
-                    <button id="login" onClick={login}>LOGIN</button>&ensp;&ensp;&ensp;<button id="signup" onClick={SignUp}>SIGN UP</button><p />
-                    <div id="social_login">
-                        <GoogleAuthLogin />
-                        <KakaoOAuth />
-                        <Naver />
+            <div className="main-logo"><img src={soribwa_yellow} alt="Soribwa" className="soribwa-main-logo" /></div>
+                <div className="login-main">
+                    <div className="input_case">
+                        <input id="email" type="text" placeholder="EMAIL" value={emailValue} onChange={userEmail} /><p />
+                        <input id="password" type="text" placeholder="PASSWORD" value={passwordValue} onChange={userPassword} /><p />
+                    </div>
+                    <div className="btn_case">
+                        <button id="login" onClick={login}>LOGIN</button>&ensp;&ensp;&ensp;<button id="signup" onClick={SignUp}>SIGN UP</button><p />
+                        <div id="social_login">
+                            <GoogleAuthLogin />
+                            <KakaoOAuth />
+                            <Naver />
+                        </div>
                     </div>
                 </div>
-            </div>
         </div>
     );
 };
