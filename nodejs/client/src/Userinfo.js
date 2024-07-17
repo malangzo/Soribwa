@@ -14,12 +14,14 @@ const UserInfo = () => {
 
     const [userAvatar, setUserAvatar] = useState(sessionStorage.getItem("img") ? sessionStorage.getItem("img"):userAvatarDefault);
     const [userName, setUserName] = useState(sessionStorage.getItem("name") ? sessionStorage.getItem("name"):"Undefined");
+    const [id, setId] = useState(sessionStorage.getItem("id") ? sessionStorage.getItem("id"):"Undefined");
     const [newUserName, setNewUserName] = useState("");
     const [isEditingName, setIsEditingName] = useState(false);
 
     useEffect(() => {
         sessionStorage.setItem("img", userAvatar);
         sessionStorage.setItem("name", userName);
+        sessionStorage.setItem("id", id);
     }, [userAvatar, userName]);
 
 
@@ -51,7 +53,7 @@ const UserInfo = () => {
                     <img src={userAvatar} alt="UserAvatar" className='avatar' />
                     <div className="info-text">
                         <p><strong>NAME : </strong>{userName}</p>
-                        <p><strong>ID : </strong> karinajimin</p>
+                        <p><strong>ID : </strong> {id}</p>
                     </div>
                 </div>
                 <div className='modify-buttons'>

@@ -1,11 +1,12 @@
 import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 const GoogleAuthLogin = () => {
     return (
         <>
             <GoogleLogin
                 onSuccess={(credentialResponse) => {
-                    // console.log("Google Login check: ", jwtDecode(credentialResponse.credential));
+                    console.log("Google Login check: ", jwtDecode(credentialResponse.credential));
                 }}
                 onError={() => {
                     console.log("Login 실패");

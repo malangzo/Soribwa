@@ -6,6 +6,8 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
+
 const NoticeWrite = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [title, setTitle] = useState('');
@@ -81,7 +83,7 @@ const NoticeWrite = () => {
                 processedImageData = await resizeAndCompressImage(imageData);
             }
 
-            const response = await fetch('http://43.202.99.19:5200/noticeInsert', {
+            const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeInsert`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -17,7 +17,7 @@ export default function NaverLoginSave() {
         sessionStorage.setItem("name", nickname);
         sessionStorage.setItem("img", img);
         console.log("session data saved...", id, nickname, img);
-        navigate("/Login");
+        navigate("/App");
     };
 
     useEffect(() => {

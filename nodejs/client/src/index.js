@@ -16,6 +16,11 @@ import NoticeWrite from './NOTICE/NoticeWrite';
 import NoticeEdit from './NOTICE/NoticeEdit';
 import NoticeContent from './NOTICE/NoticeContent';
 
+import KakaoTest from "./LOGIN/KakaoTest";
+import Naver from "./LOGIN/Naver";
+import NaverLogin from "./LOGIN/NaverLogin";
+import NaverLoginSave from "./LOGIN/NaverLoginSave";
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
@@ -27,7 +32,7 @@ ReactDOM.createRoot(rootElement).render(
     onScriptLoadSuccess={() => console.log("성공")}>
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<App />} />
+        <Route path='/App' element={<App />} />
         <Route path='/Cyclesound' element={<Cyclesound />} />
         <Route path='/CycleResult' element={<CycleResult />} />
         <Route path='/Graph' element={<Graph />} />
@@ -36,12 +41,16 @@ ReactDOM.createRoot(rootElement).render(
         <Route path='/Setting' element={<Setting />} />
         <Route path='/Userinfo' element={<Userinfo />} />
         <Route path='/Conversation' element={<Conversation />} />
-        <Route path='/Login' element={<Login />} />
+        <Route path='/' element={<Login />} />
         <Route path='/Register' element={<Register />} />
         <Route path='/NoticeList' element={<NoticeList />} />
         <Route path='/NoticeWrite' element={<NoticeWrite />} />
         <Route path='/NoticeEdit/:notice_no' element={<NoticeEdit />} />
         <Route path='/NoticeContent/:notice_no' element={<NoticeContent />} />
+        <Route path='/KakaoTest' element={<KakaoTest />} />
+        <Route path='/Naver' element={<Naver />} />
+        <Route path='/NaverLogin' element={<NaverLogin />} />
+        <Route path='/NaverLoginSave' element={<NaverLoginSave />} />
       </Routes>
     </BrowserRouter>
   </GoogleOAuthProvider>

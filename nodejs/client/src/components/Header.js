@@ -14,7 +14,7 @@ const Header = ({ toggleSidebar }) => {
         </button>
         <img src={soribwa} alt="Soribwa" className="soribwa-logo" />
       </div>
-      <Link to="/">
+      <Link to="/App">
         <button className="back-button">
           <img src={backIcon} alt="Back" />
         </button>

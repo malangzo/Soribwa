@@ -6,6 +6,8 @@ import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 
+const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
+
 const NoticeEdit = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const { notice_no } = useParams();
@@ -29,7 +31,7 @@ const NoticeEdit = () => {
 
     const fetchNotice = async () => {
         try {
-            const response = await fetch(`http://43.202.99.19:5200/noticeContent/${notice_no}`);
+            const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeContent/${notice_no}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -107,7 +109,7 @@ const NoticeEdit = () => {
                 processedImageData = await resizeAndCompressImage(imageData);
             }
 
-            const response = await fetch(`http://43.202.99.19:5200/noticeUpdate/${notice_no}`, {
+            const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeUpdate/${notice_no}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

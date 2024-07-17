@@ -18,7 +18,7 @@ export default function NaverLogin() {
     const NAVER_SECRET = process.env.REACT_APP_NAVER_CLIENT_SECRET;
     const NAVER_REDIRECT_URI = process.env.REACT_APP_NAVER_REDIRECT_URI_LOGIN;
     const NAVER_REDIRECT_URIN = process.env.REACT_APP_NAVER_REDIRECT_URI_NLOGIN;
-    const REDIRECT_URI = encodeURI(NNAVER_REDIRECT_URIN);
+    const REDIRECT_URI = encodeURI(NAVER_REDIRECT_URIN);
     const NAVER_TOKEN_URL = `https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=${NAVER_CLIENT_ID}&client_secret=${NAVER_SECRET}&redirect_uri=${REDIRECT_URI}&code=${code}&state=${state}`;
     const header = {'X-Naver-Client-Id': NAVER_CLIENT_ID, 'X-Naver-Client-Secret': NAVER_SECRET, 'content-type': 'application/json;charset=utf-8',};
 
@@ -32,7 +32,7 @@ export default function NaverLogin() {
         } catch (err) {
             console.log(err);
         }
-        navigate("/Login");
+        navigate("/App");
     };
 
     useEffect(() => {

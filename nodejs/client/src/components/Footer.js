@@ -9,7 +9,7 @@ import settingIcon from '../images/setting.png';
 const Footer = () => {
   return (
     <footer>
-      <Link to="/">
+      <Link to="/App">
         <img src={homeIcon} alt="Home" />
         <p>HOME</p>
       </Link>

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
+const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
+
 const KakaoMap = () => {
   const [markerData, setMarkerData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://43.202.99.19:5200/getNoiseData');
+        const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/getNoiseData`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

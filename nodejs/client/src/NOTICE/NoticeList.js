@@ -5,6 +5,8 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
+
 const NoticeList = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [notices, setNotices] = useState([]);
@@ -19,7 +21,7 @@ const NoticeList = () => {
     useEffect(() => {
         const fetchNotices = async () => {
             try {
-                const response = await fetch(`http://43.202.99.19:5200/noticeList`);
+                const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeList`);
                 const data = await response.json();
                 const sortedData = data.reverse()
                 setNotices(sortedData);

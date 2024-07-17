@@ -47,7 +47,7 @@ export default function KakaoTest() {
             } catch (err) {
                 console.log(err);
             }
-            navigate("/Login");
+            navigate("/App");
         } catch (err) {
             console.log(err);
         }
