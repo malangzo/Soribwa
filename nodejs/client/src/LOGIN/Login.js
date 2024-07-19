@@ -37,7 +37,9 @@ const Login = () => {
             });
 
             const result = await response.json();
+            sessionStorage.setItem("id", result.data[0].email);
             sessionStorage.setItem("name", result.data[0].name);
+            sessionStorage.setItem("img", result.data[0].user_avatar);
             if (result.data) {
                 // Handle success
             }

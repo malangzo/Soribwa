@@ -24,7 +24,7 @@ import json
 from starlette.requests import Request
 from datetime import datetime
 from database import db_conn
-from models import CycleData, Realtime_log, User_info
+from models import CycleData, Realtime_log, User_info, Notice_board
 from dotenv import load_dotenv
 import csv
 from io import BytesIO, StringIO
@@ -32,6 +32,7 @@ import base64
 from pydantic import BaseModel
 from sqlalchemy import create_engine, select, desc
 from datetime import datetime, timedelta
+from typing import Optional
 
 # BASE_DIR 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
@@ -45,6 +46,8 @@ HOSTNAME = os.getenv("Mysql_Hostname")
 PORT = os.getenv("Mysql_Port")
 USERNAME = os.getenv("Mysql_Username")
 PASSWORD = os.getenv("Mysql_Password")
+YOUR_CLIENT_ID = os.getenv("YOUR_CLIENT_ID")
+YOUR_CLIENT_SECRET = os.getenv("YOUR_CLIENT_SECRET")
 
 app = FastAPI()
 
@@ -73,6 +76,10 @@ app.add_middleware(
 
 ################################################api start#################################################
 
+@app.get('/')
+async def test():
+    result = 'Hello World'
+    return result
 
 @app.get('/test')
 async def test():
@@ -276,10 +283,145 @@ async def cycle_deleteAll():
 
 
 ##################################################################
-    
-    
+
+
+class NoticeCreate(BaseModel):
+    title: str
+    content: str
+    file: Optional[str] = None
+
+class NoticeUpdate(BaseModel):
+    title: str
+    content: str
+    file: Optional[str] = None
     
 @app.get("/getNoiseData")
 async def get_noise_data():
     query = session.query(Realtime_log).all()
     return query
+
+@app.get("/noticeList")
+async def get_notice_list():
+    query = session.query(Notice_board).all()
+    return query
+
+@app.get("/noticeFirst")
+async def get_notice_first():
+    query = session.query(Notice_board.title).order_by(desc(Notice_board.no)).first()
+    return {"title": query[0]}
+
+@app.get("/noticeContent/{notice_no}")
+async def get_notice_content(notice_no: int):
+    query = session.query(Notice_board).filter(Notice_board.no == notice_no).first()
+    return query
+
+@app.post("/noticeInsert")
+async def save_notice_data(notice: NoticeCreate):
+    insert = Notice_board(title=notice.title, content=notice.content, file=notice.file)
+    session.add(insert)
+    session.commit()
+    session.refresh(insert)
+    result = {"notice_no": insert.no}
+    return result
+
+@app.put("/noticeUpdate/{notice_no}")
+async def update_notice_data(notice_no: int, notice: NoticeUpdate):
+    update = session.query(Notice_board).filter(Notice_board.no == notice_no).first()
+    update.title = notice.title
+    update.content = notice.content
+    update.file = notice.file
+    session.commit()
+    result = session.query(Notice_board).all()
+    return result
+
+@app.delete("/noticeDelete/{notice_no}")
+async def delete_notice_data(notice_no: int):
+    delete = session.query(Notice_board).filter(Notice_board.no == notice_no).first()
+    session.delete(delete)
+    session.commit()
+    result = session.query(Notice_board).all()
+    return result
+
+
+
+
+######################################################################
+
+
+import asyncio
+import json
+import logging
+import time
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from requests import Session
+import websockets
+
+API_BASE = "https://openapi.vito.ai"
+SAMPLE_RATE = 8000
+ENCODING = "LINEAR16"
+BYTES_PER_SAMPLE = 2
+
+class RTZROpenAPIClient:
+    def __init__(self, client_id, client_secret):
+        super().__init__()
+        self._logger = logging.getLogger(__name__)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self._sess = Session()
+        self._token = None
+
+    @property
+    def token(self):
+        if self._token is None or self._token["expire_at"] < time.time():
+            resp = self._sess.post(
+                API_BASE + "/v1/authenticate",
+                data={"client_id": self.client_id, "client_secret": self.client_secret},
+            )
+            resp.raise_for_status()
+            self._token = resp.json()
+        return self._token["access_token"]
+
+    async def streaming_transcribe(self, websocket: WebSocket, config=None):
+        if config is None:
+            config = dict(
+                sample_rate="8000",
+                encoding="LINEAR16",
+                use_itn="true",
+                use_disfluency_filter="false",
+                use_profanity_filter="false",
+            )
+
+        STREAMING_ENDPOINT = "wss://{}/v1/transcribe:streaming?{}".format(
+            API_BASE.split("://")[1], "&".join(map("=".join, config.items()))
+        )
+        conn_kwargs = dict(extra_headers={"Authorization": "bearer " + self.token})
+
+        async def streamer(ws):
+            while True:
+                data = await websocket.receive_bytes()
+                if not data:
+                    break
+                await ws.send(data)
+            await ws.send("EOS")
+
+        async def transcriber(ws):
+            async for msg in ws:
+                msg = json.loads(msg)
+                print(msg)
+                if msg["final"]:
+                    await websocket.send_text(msg["alternatives"][0]["text"])
+
+        async with websockets.connect(STREAMING_ENDPOINT, **conn_kwargs) as ws:
+            await asyncio.gather(
+                streamer(ws),
+                transcriber(ws),
+            )
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    client = RTZROpenAPIClient(client_id=f'{YOUR_CLIENT_ID}', client_secret=f'{YOUR_CLIENT_SECRET}')
+    try:
+        await client.streaming_transcribe(websocket)
+    except WebSocketDisconnect:
+        print("Client disconnected")

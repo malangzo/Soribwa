@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 
+const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
 const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
 
 const NoticeEdit = () => {
@@ -109,7 +110,7 @@ const NoticeEdit = () => {
                 processedImageData = await resizeAndCompressImage(imageData);
             }
 
-            const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeUpdate/${notice_no}`, {
+            const response = await fetch(`${REACT_APP_FASTAPI}/noticeUpdate/${notice_no}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,30 +134,33 @@ const NoticeEdit = () => {
         }
     }
 
+    const handleLinkClick = (e) => {
+        e.preventDefault();
+        if (window.confirm('입력한 내용이 저장되지 않을 수 있습니다. 정말로 나가시겠습니까?')) {
+            navigate(`/NoticeContent/${notice_no}`);
+        }
+    };
+
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
-        <main>
-        <div className="notice-container">
-            <div className="notice-header">
-                <div className="header-title">NOTICE</div>
-                <div className="add-icon">{'+'}</div>
-            </div>
-            <div className="notice-content">
-                <div className='notice-top'>
-                    <Link to={`/NoticeContent/${notice_no}`}><div className='arrow'>{'<'}</div></Link>
-                    <div className='title'>글 수정<p></p></div>
-                </div>
-                <div className='notice-body'>
-                    <input type="text" placeholder="제목" className="input-title" value={title} onChange={onTitleChange}/>
-                    <Editor value={content} onChange={onEditorChange} />
-                </div>
-                <div className='notice-bottom'>
-                    <button className='button' onClick={updateNotice}>수정</button>
+        <main style= {{ padding: '0px' }}>
+            <div className="notice-container">
+                <div className="notice-editor">
+                    <div className='notice-top'>
+                        <Link to="#" onClick={handleLinkClick} as="div" className="arrow" >{'<'}</Link>
+                        <div className='title'>글 수정</div>
+                    </div>
+                    <div className='notice-body'>
+                        <input type="text" maxLength="100" placeholder="제목" className="input-title" value={title} onChange={onTitleChange}/>
+                        <Editor value={content} onChange={onEditorChange} />
+                    </div>
+                    <div className='notice-bottom'>
+                        <button className='button' onClick={updateNotice}>수정</button>
+                    </div>
                 </div>
             </div>
-        </div>
         </main>
         <Footer />
         </div>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"
 import "./Login.css";
 import soribwa_yellow from '../images/soribwa_yellow.png';
 
@@ -6,6 +7,7 @@ const Register = () => {
     const [emailValue, setEmailValue] = useState("");
     const [nameValue, setNameValue] = useState("");
     const [passwordValue, setPasswordValue] = useState("");
+    const navigate = useNavigate()
     const REGISTER_URL = process.env.REACT_APP_REGISTER_URL;
 
     const userEmail = event => {
@@ -32,7 +34,12 @@ const Register = () => {
             });
 
             const result = await response.json();
-            console.log("성공: ", result);
+            if (result.status == 200) {
+                console.log("성공: ", result);
+                navigate("/")
+                alert("훼왢개엛 덺")
+            }
+
         } catch (error) {
             console.error("실패: ", error);
         }

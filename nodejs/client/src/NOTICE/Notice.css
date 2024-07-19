@@ -5,7 +5,7 @@
     margin-top: 10px;
     background-color: #ffffff;
   }
-  
+
   .notice-header {
     display: flex;
     padding: 10px;
@@ -15,6 +15,12 @@
     font-size: 20px;
     font-weight: bold;
     color: #072B8C;
+  }
+
+  a.header-title {
+    display: block;
+    text-decoration: none;
+    color: inherit;
   }
 
   a.add-icon {
@@ -44,16 +50,22 @@
     width: 25px;
     height: 25px;
   }
-  
+
   .notice-top {
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
     padding: 10px;
-}
+  }
 
   a.notice-top {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  a.arrow {
     display: block;
     text-decoration: none;
     color: inherit;
@@ -107,7 +119,18 @@
 /* Notice Content */
 
 .notice-content {
-    padding: 10px;
+  padding: 15px;
+  border-top: 2px solid #072B8C;
+  border-bottom: 2px solid #072B8C;
+}
+
+.notice-content .notice-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
 }
 
 .notice-content .arrow {
@@ -131,6 +154,50 @@
     margin-top: 5px;
 }
 
+.notice-content .notice-body {
+  font-size: 16px;
+  padding: 20px;
+  border-bottom: #ddd 1px solid;
+  margin-bottom: 20px;
+}
+
+
+/* Notice Editor */
+
+.notice-editor {
+  padding: 10px;
+  margin-bottom: 61px;
+}
+
+.notice-editor .arrow {
+  position: absolute;
+  left: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.notice-editor .notice-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 10px;
+}
+
+.notice-editor .title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.notice-editor .date {
+  font-size: 12px;
+  color: #888;
+  align-self: flex-end;
+  margin-top: 5px;
+}
+
 .notice-body {
     font-size: 16px;
     padding: 15px;
@@ -143,6 +210,12 @@
     align-items: center;
 }
 
+a.notice-bottom button {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
 .notice-bottom button {
     padding: 8px 12px;
     border: 2px solid #072B8C;
@@ -151,6 +224,7 @@
     cursor: pointer;
     font-size: 12px;
     margin: 5px;
+    color: rgb(0, 0, 0);
 }
 
 /* Notice Write */

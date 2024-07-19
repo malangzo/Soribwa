@@ -24,7 +24,7 @@ main {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 10px 10px 62px 10px;
   align-items: center;
   background-color: #FFFFFF;
 }
@@ -32,13 +32,25 @@ main {
 .notification {
   background-color: #f8d7da;
   color: #000000;
+  width: 330px;
+  height: 50px;
   margin: 0px 10px 10px 10px;
   border-radius: 15px;
-  padding: 12px 185px 15px 20px;
   display: flex;
   align-items: center;
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
   font-weight: bold;
+}
+
+.notification img {
+  margin-left: 10px;
+  width: 30px;
+  height: 30px;
+}
+
+.notification-text {
+  margin-left: 10px;
+
 }
 
 .scroll-button {
@@ -237,12 +249,15 @@ h5 {
   background-color: #dae1f4; opacity: 0.8;
   border: 3px solid #0532A9;
   border-radius: 50%;
+  aspect-ratio: 1 / 1;
   width: 35px;
-  height: 35px;
-  font-size: 24px;
+  font-size: 5vw;
   font-weight: bold;
   color: #0532A9;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
   z-index: 1000;
 }
@@ -264,9 +279,16 @@ h5 {
 }
 
 .info-popup-content ul {
-  list-style: none !important;
+  list-style: none;
+  text-align: center;
   margin: 0;
   padding: 0;
+}
+
+.info-popup-content li {
+  align-items: center;
+  margin-bottom: 5px;
+  text-align: center;
 }
 
 .info-popup-close {
@@ -278,7 +300,9 @@ h5 {
   font-size: 25px;
 }
 
-
+.footer {
+  height: 62px; /* Footer의 고정 높이 */
+}
 
 .container.blur main {
   filter: blur(5px);

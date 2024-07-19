@@ -33,9 +33,9 @@ const ConvInfo = () => {
             <p>대화에서 느껴지는 감정을 분석하며, 감정에 따라 대화 내용의 색이 바뀝니다.</p>
             <p>색깔에 따른 감정 차이</p>
             <ul>
-              <li>검정: 평이</li>
-              <li>빨강: 화남</li>
-              <li>파랑: 슬픔</li>
+              <li><span style={{ color: 'black' }}>●</span>&nbsp;&nbsp;검정: 평이</li>
+              <li><span style={{ color: 'red' }}>●</span>&nbsp;&nbsp;빨강: 화남</li>
+              <li><span style={{ color: 'blue' }}>●</span>&nbsp;&nbsp;파랑: 슬픔</li>
             </ul>
             <p></p>
           </div>

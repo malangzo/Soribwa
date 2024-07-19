@@ -6,7 +6,7 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
+const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
 
 const NoticeWrite = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -83,7 +83,7 @@ const NoticeWrite = () => {
                 processedImageData = await resizeAndCompressImage(imageData);
             }
 
-            const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeInsert`, {
+            const response = await fetch(`${REACT_APP_FASTAPI}/noticeInsert`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -113,7 +113,15 @@ const NoticeWrite = () => {
         }
     }
 
+    const handleLinkClick = (e) => {
+        e.preventDefault();
+        if (window.confirm('입력한 내용이 저장되지 않을 수 있습니다. 정말로 나가시겠습니까?')) {
+            navigate('/NoticeList');
+        }
+    };
+
     useEffect(() => {
+        
     }, []);
     
     return (
@@ -122,14 +130,13 @@ const NoticeWrite = () => {
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
         <main style= {{ padding: '0px' }}>
             <div className="notice-container">
-
-                <div className="notice-content">
+                <div className="notice-editor">
                     <div className='notice-top'>
-                        <Link to = "/NoticeList"><div className='arrow'>{'<'}</div></Link>
+                        <Link to = "#" onClick={handleLinkClick} as="div" className="arrow">{'<'}</Link>
                         <div className='title'>글쓰기</div>
                     </div>
                     <div className='notice-body'>
-                        <input type="text" placeholder="제목" className="input-title" onChange={onTitleChange}/>
+                        <input type="text" maxLength="100" placeholder="제목" className="input-title" onChange={onTitleChange}/>
                         <Editor value={content} onChange={onEditorChange} />
                     </div>
                     <div className='notice-bottom'>

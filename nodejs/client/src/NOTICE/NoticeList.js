@@ -4,6 +4,7 @@ import './Notice.css';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import megaphone from '../images/megaphone.png';
 
 const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
 
@@ -21,7 +22,7 @@ const NoticeList = () => {
     useEffect(() => {
         const fetchNotices = async () => {
             try {
-                const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeList`);
+                const response = await fetch('https://yfastapi.soribwa.com/noticeList');
                 const data = await response.json();
                 const sortedData = data.reverse()
                 setNotices(sortedData);
@@ -42,7 +43,6 @@ const NoticeList = () => {
     const endIndex = startIndex + perPage;
     const currentNotices = notices.slice(startIndex, endIndex);
     const latestNotice = notices[0];
-    const megaphone = '../images/megaphone.png';
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
@@ -51,8 +51,8 @@ const NoticeList = () => {
         <main style={{  display: 'block', alignItems: 'initial' }}>
             <div className='notice-container'>
                 <div className="notice-header">
-                    <div className="header-title">Notice</div>
-                    <Link to = "/NoticeWrite" as="div" className="add-icon"><div className="add-icon">{'+'}</div></Link>
+                    <Link to = "/NoticeList" as="div" className='header-title'>Notice</Link>
+                    <Link to = "/NoticeWrite" as="div" className="add-icon">+</Link>
                 </div>
                 <div className="list">
                     {latestNotice && (

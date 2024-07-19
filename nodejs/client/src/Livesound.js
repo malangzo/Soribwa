@@ -207,7 +207,7 @@ const Livesound = () => {
     };
 
 
-    const REACT_APP_JAEHYUCK=process.env.REACT_APP_JAEHYUCK
+    const REACT_APP_JAEHYUCK_NODEAPI=process.env.REACT_APP_JAEHYUCK_NODEAPI
     
     // 사용자가 음성 녹음을 중지했을 때
     const offRecAudio = () => {
@@ -243,7 +243,8 @@ const Livesound = () => {
                     'dog_bark': '강아지 짖는 소리', 'drilling': '전동 드릴 소리', 'children_playing': '아이들 노는 소리', 'street_music': '음악 소리', 'air_conditioner': '에어컨 소리',
                     'car_horn': '자동차 경적 소리', 'engine_idling': '엔진 소리', 'jackhammer': '천공기 소리', 'gun_shot': '총 소리', 'siren': '사이렌 소리'
                 };
-                return axios.post(`${REACT_APP_JAEHYUCK}/node_test`, formData, {
+
+                return axios.post(`${REACT_APP_JAEHYUCK_NODEAPI}/audio_test`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -280,7 +281,7 @@ const Livesound = () => {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('timestamp', 'gigi')
-            return axios.post(`${REACT_APP_JAEHYUCK}/model_test`, formData, {
+            return axios.post(`${REACT_APP_JAEHYUCK_NODEAPI}/model_test`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

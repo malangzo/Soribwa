@@ -41,9 +41,10 @@ export default function KakaoTest() {
                     },
                     url: "https://kapi.kakao.com/v2/user/me",
                 })
+
                 sessionStorage.setItem("id", res1.data.id)
                 sessionStorage.setItem("name", res1.data.kakao_account.profile.nickname)
-                sessionStorage.setItem("img", res1.data.kakao_account.profile.profile_image_url)
+                sessionStorage.setItem("img", res1.data.kakao_account.profile.profile_image_url.replace("http", "https"))
             } catch (err) {
                 console.log(err);
             }

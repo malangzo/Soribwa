@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
 
+const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
 const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
 
 const NoticeContent = () => {
@@ -52,7 +53,7 @@ const NoticeContent = () => {
     async function onClickDeleteNotice() {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
             try {
-                const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeDelete/${notice_no}`, {
+                const response = await fetch(`${REACT_APP_FASTAPI}/noticeDelete/${notice_no}`, {
                     method: 'DELETE',
                 });
 
@@ -71,15 +72,15 @@ const NoticeContent = () => {
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
-        <main>
+        <main style={{  display: 'block', alignItems: 'initial' }}>
             <div className='notice-container'>
                 <div className="notice-header">
-                    <div className="header-title">NOTICE</div>
-                    <Link to = "/NoticeWrite" as="div" className="add-icon"><div className="add-icon">{'+'}</div></Link>
+                    <Link to = "/NoticeList" as="div" className='header-title'>Notice</Link>
+                    <Link to = "/NoticeWrite" as="div" className="add-icon">+</Link>
                 </div>
                 <div className="notice-content">
                     <div className='notice-top'>
-                        <Link to = "/NoticeList"><div className='arrow'>{'<'}</div></Link>
+                        <Link to = "/NoticeList" as="div" className='arrow'>{'<'}</Link>
                         <div className='title'>{notice.title}</div>
                         <div className='date'>{notice.date && new Date(notice.date).toISOString().split('T')[0]}</div>
                     </div>

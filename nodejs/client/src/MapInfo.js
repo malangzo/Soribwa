@@ -32,9 +32,9 @@ const MapInfo = () => {
             <p>각 마커를 클릭할 시, 해당 지점에서 나는 소음의 종류와 데시벨을 확인 가능합니다.</p>
             <p>마커 주변의 원은 소음 레벨과 반경을 나타냅니다:</p>
             <ul>
-              <li>빨강: 100dB 이상 소음</li>
-              <li>노랑: 80dB 이상 소음</li>
-              <li>초록: 60dB 이상 소음</li>
+              <li><span style={{ color: 'red' }}>●</span>&nbsp;&nbsp;빨강: 100dB 이상 소음</li>
+              <li><span style={{ color: 'orange' }}>●</span>&nbsp;&nbsp;주황: 80dB 이상 소음</li>
+              <li><span style={{ color: 'yellow' }}>●</span>&nbsp;&nbsp;노랑: 60dB 이상 소음</li>
             </ul>
             <p></p>
           </div>
