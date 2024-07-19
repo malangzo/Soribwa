@@ -43,7 +43,7 @@
     font-weight: bold;
 }
 
-#email, #name, #password {
+#email, #name, #password, #passwordcheck {
     height: 40px;
     width: 250px;
     border-radius: 8px;
@@ -55,7 +55,7 @@
     margin-bottom: 10px; 
 }
 
-#email::placeholder, #password::placeholder, #name::placeholder {
+#email::placeholder, #password::placeholder, #name::placeholder, #passwordcheck::placeholder {
     color: #FFFFFF;
 }
 

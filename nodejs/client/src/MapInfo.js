@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import questionmark from './images/questionmark.png';
 
 const MapInfo = () => {
   const [showInfo, setShowInfo] = useState(true);
@@ -22,7 +23,9 @@ const MapInfo = () => {
 
   return (
     <>
-      <button className="info-button" onClick={handleInfoClick}>?</button>
+      <button className="info-button" onClick={handleInfoClick}>
+        <img src={questionmark} alt="?" className="info-icon" style={{ width: '40px', height: 'auto' }} />
+      </button>
       {showInfo && (
         <div className="info-popup">
           <div className="info-popup-close" onClick={handleCloseClick}>×</div>

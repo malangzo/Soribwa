@@ -6,7 +6,12 @@ const GoogleAuthLogin = () => {
         <>
             <GoogleLogin
                 onSuccess={(credentialResponse) => {
-                    console.log("Google Login check: ", jwtDecode(credentialResponse.credential));
+                    const verified_data = jwtDecode(credentialResponse.credential)
+                    if (verified_data.email_verified) {
+                        sessionStorage.setItem("id", verified_data.email)
+                        sessionStorage.setItem("name", verified_data.name)
+                        sessionStorage.setItem("img", verified_data.picture)
+                        }
                 }}
                 onError={() => {
                     console.log("Login 실패");

@@ -348,22 +348,43 @@ async def delete_notice_data(notice_no: int):
 ######################################################################
 
 
+import requests
+import os.path
+import json
+from dotenv import load_dotenv
+
+# BASE_DIR 설정
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
+dotenv_path = os.path.join(BASE_DIR, '.env')
+
+# .env 파일 로드
+load_dotenv(dotenv_path)
+
+# 환경 변수 가져오기
+YOUR_CLIENT_ID = os.getenv("YOUR_CLIENT_ID")
+YOUR_CLIENT_SECRET = os.getenv("YOUR_CLIENT_SECRET")
+
+
 import asyncio
 import json
 import logging
+import os
 import time
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from requests import Session
+import subprocess
+from fastapi import FastAPI, WebSocket
 import websockets
+from pydantic import BaseModel
+from requests import Session
+from starlette.websockets import WebSocketDisconnect
 
 API_BASE = "https://openapi.vito.ai"
+
 SAMPLE_RATE = 8000
 ENCODING = "LINEAR16"
 BYTES_PER_SAMPLE = 2
 
 class RTZROpenAPIClient:
     def __init__(self, client_id, client_secret):
-        super().__init__()
         self._logger = logging.getLogger(__name__)
         self.client_id = client_id
         self.client_secret = client_secret
@@ -381,47 +402,32 @@ class RTZROpenAPIClient:
             self._token = resp.json()
         return self._token["access_token"]
 
-    async def streaming_transcribe(self, websocket: WebSocket, config=None):
-        if config is None:
-            config = dict(
-                sample_rate="8000",
-                encoding="LINEAR16",
-                use_itn="true",
-                use_disfluency_filter="false",
-                use_profanity_filter="false",
-            )
-
-        STREAMING_ENDPOINT = "wss://{}/v1/transcribe:streaming?{}".format(
-            API_BASE.split("://")[1], "&".join(map("=".join, config.items()))
-        )
+    async def streaming_transcribe(self, websocket):
+        STREAMING_ENDPOINT = f"wss://{API_BASE.split('://')[1]}/v1/transcribe:streaming?sample_rate=16000&encoding=LINEAR16"
         conn_kwargs = dict(extra_headers={"Authorization": "bearer " + self.token})
 
-        async def streamer(ws):
+        async with websockets.connect(STREAMING_ENDPOINT, **conn_kwargs) as stream:
             while True:
-                data = await websocket.receive_bytes()
-                if not data:
-                    break
-                await ws.send(data)
-            await ws.send("EOS")
+                webm_data = await websocket.receive_bytes()
 
-        async def transcriber(ws):
-            async for msg in ws:
-                msg = json.loads(msg)
-                print(msg)
-                if msg["final"]:
-                    await websocket.send_text(msg["alternatives"][0]["text"])
+                await stream.send(webm_data)
+                
+                response = await stream.recv()
+                await websocket.send_text(response)
 
-        async with websockets.connect(STREAMING_ENDPOINT, **conn_kwargs) as ws:
-            await asyncio.gather(
-                streamer(ws),
-                transcriber(ws),
-            )
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    
+    CLIENT_ID = f'{YOUR_CLIENT_ID}'
+    CLIENT_SECRET = f'{YOUR_CLIENT_SECRET}'
+    
     await websocket.accept()
-    client = RTZROpenAPIClient(client_id=f'{YOUR_CLIENT_ID}', client_secret=f'{YOUR_CLIENT_SECRET}')
+    print(websocket.send_bytes)
+    
+    client = RTZROpenAPIClient(CLIENT_ID, CLIENT_SECRET)
+    
     try:
         await client.streaming_transcribe(websocket)
     except WebSocketDisconnect:
-        print("Client disconnected")
+        print("WebSocket disconnected")

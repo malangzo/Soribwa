@@ -22,6 +22,10 @@ const Setting = () => {
     sessionStorage.setItem("name", userName);
   }, [userAvatar, userName]);
 
+  const handleLogout = () => {
+    sessionStorage.clear();
+    window.location.href = '/';
+  };
 
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
@@ -37,11 +41,13 @@ const Setting = () => {
               <button className='button'>회원 정보 수정</button>
             </Link>
             <button className='button'>마이크 볼륨 조절</button>
-            <button className='button'>내 데이터</button>
+            <Link to="/Graph">
+              <button className='button'>내 데이터</button>
+            </Link>
             &nbsp;&nbsp;&nbsp;
             <p>User</p>
-            <Link to="/">
-              <button className='button'>로그 아웃</button>
+            <Link to="#" onClick={handleLogout}>
+              <button className='button'>로그아웃</button>
             </Link>
             <button className='button'>회원 탈퇴</button>
           </div>

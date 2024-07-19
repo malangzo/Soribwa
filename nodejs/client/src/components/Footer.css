@@ -10,7 +10,7 @@ footer {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 10px 0;
+  padding: 10px;
   background-color: #FFFFFF;
   color: white;
   position: fixed;

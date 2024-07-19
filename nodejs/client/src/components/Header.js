@@ -1,11 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Header.css';
 import sidebarIcon from '../images/main_left.png';
 import backIcon from '../images/back.png';
 import soribwa from '../images/soribwa.png';
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Header = ({ toggleSidebar }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isValidPath, setIsValidPath] = useState(true);
+
+  useEffect(() => {
+    const checkValidPath = async () => {
+      try {
+        const response = await fetch(`${location.path}`);
+        if (response.ok) {
+          setIsValidPath(true);
+        } else {
+          setIsValidPath(false);
+        }
+      } catch (error) {
+        setIsValidPath(false);
+        console.error('Error checking valid path:', error);
+      }
+    };
+
+    checkValidPath();
+  }, [location.path]);
+
+  useEffect(() => {
+    if (!isValidPath) {
+      navigate('/NoticeList');
+    }
+  }, [isValidPath, navigate]);
+
+    const handleBackButtonClick = () => {
+      if (location.pathname !== '/App') {
+        if (isValidPath) {
+          navigate(-1);
+        } else { 
+          navigate('/App');
+      }
+    }
+  };
+
   return (
     <header className="header">
       <div className="menu-logo">
@@ -14,11 +52,9 @@ const Header = ({ toggleSidebar }) => {
         </button>
         <img src={soribwa} alt="Soribwa" className="soribwa-logo" />
       </div>
-      <Link to="/App">
-        <button className="back-button">
+        <button className="back-button" onClick={handleBackButtonClick}>
           <img src={backIcon} alt="Back" />
         </button>
-      </Link>
     </header>
   );
 };
