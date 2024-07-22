@@ -1,124 +1,60 @@
-import requests
-import os.path
-import json
-from dotenv import load_dotenv
-
-# BASE_DIR 설정
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
-dotenv_path = os.path.join(BASE_DIR, '.env')
-
-# .env 파일 로드
-load_dotenv(dotenv_path)
-
-# 환경 변수 가져오기
-YOUR_CLIENT_ID = os.getenv("YOUR_CLIENT_ID")
-YOUR_CLIENT_SECRET = os.getenv("YOUR_CLIENT_SECRET")
-
-
-import asyncio
-import json
-import logging
-import os
-import tempfile
-import time
-from io import DEFAULT_BUFFER_SIZE
-
+import subprocess
+import grpc
 import vito_stt_client_pb2 as pb
-import websockets
-from pydub import AudioSegment
-from requests import Session
+import vito_stt_client_pb2_grpc as pb_grpc
+import asyncio
 
-API_BASE = "https://openapi.vito.ai"
+TOKEN = 'your_token_here'
 
-BYTES_PER_SAMPLE = 2
-CHUNK = 1024
-FORMAT = pyaudio.paInt16 
-CHANNELS = 1 # Only supports 1-Channel Input 
-RATE = 8000
-ENCODING = pb.DecoderConfig.AudioEncoding.LINEAR16
-
-class MicrophoneStream:
-    def __init__(self, rate, chunk_size):
-        self.rate = rate
-        self.chunk_size = chunk_size
-
-    def __enter__(self):
-        import pyaudio
-        self.pyaudio = pyaudio.PyAudio()
-        self.stream = self.pyaudio.open(format=pyaudio.paInt16,
-                                        channels=1,
-                                        rate=self.rate,
-                                        input=True,
-                                        frames_per_buffer=self.chunk_size)
-        return self
-
-    def __exit__(self, type, value, traceback):
-        self.stream.stop_stream()
-        self.stream.close()
-        self.pyaudio.terminate()
-
-    def generator(self):
+async def audio_stream_generator():
+    # FFmpeg 명령어를 사용하여 오디오 스트림을 캡처합니다.
+    command = [
+        'ffmpeg',
+        '-f', 'alsa',              # 입력 형식 (Linux의 경우)
+        '-i', 'default',           # 입력 장치 (기본 장치 사용)
+        '-f', 'wav',               # 출력 형식
+        '-'
+    ]
+    
+    # FFmpeg 프로세스를 시작합니다.
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    
+    # FFmpeg의 오류 로그를 읽어 출력합니다.
+    stderr = process.stderr.read().decode('utf-8')
+    if stderr:
+        print("FFmpeg Error:", stderr)
+    
+    try:
         while True:
-            data = self.stream.read(self.chunk_size, exception_on_overflow=False)
-            yield data
+            chunk = process.stdout.read(1024)  # 1024 바이트씩 읽기
+            if not chunk:
+                break
+            yield pb.DecoderRequest(audio_content=chunk)
+    finally:
+        process.terminate()
 
-class RTZROpenAPIClient:
-    def __init__(self, client_id, client_secret):
-        self._logger = logging.getLogger(__name__)
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self._sess = Session()
-        self._token = None
+async def transcribe_streaming_grpc():
+    base = "grpc-openapi.vito.ai:443"
+    # Create the gRPC channel
+    channel = grpc.aio.secure_channel(base, grpc.ssl_channel_credentials())
+    
+    try:
+        stub = pb_grpc.OnlineDecoderStub(channel)
+        metadata = (('authorization', 'Bearer ' + TOKEN),)
+        
+        req_iter = audio_stream_generator()
+        resp_iter = stub.Decode(req_iter, metadata=metadata)
+        
+        async for resp in resp_iter:
+            for res in resp.results:
+                if res.is_final:
+                    print("Final Result:", res.alternatives[0].text)
+    finally:
+        await channel.close()  # Ensure the channel is closed when done
 
-    @property
-    def token(self):
-        if self._token is None or self._token["expire_at"] < time.time():
-            resp = self._sess.post(
-                API_BASE + "/v1/authenticate",
-                data={"client_id": self.client_id, "client_secret": self.client_secret},
-            )
-            resp.raise_for_status()
-            self._token = resp.json()
-        return self._token["access_token"]
-
-    async def streaming_transcribe(self, config=None):
-        if config is None:
-            config = dict(
-                sample_rate="8000",
-                encoding="LINEAR16",
-                use_itn="true",
-                use_disfluency_filter="false",
-                use_profanity_filter="false",
-            )
-
-        STREAMING_ENDPOINT = "wss://{}/v1/transcribe:streaming?{}".format(
-            API_BASE.split("://")[1], "&".join(map("=".join, config.items()))
-        )
-        conn_kwargs = dict(extra_headers={"Authorization": "bearer " + self.token})
-
-        async def streamer(websocket):
-            with MicrophoneStream(SAMPLE_RATE, DEFAULT_BUFFER_SIZE) as stream:
-                for chunk in stream.generator():
-                    await websocket.send(chunk)
-                await websocket.send("EOS")
-
-        async def transcriber(websocket):
-            async for msg in websocket:
-                msg = json.loads(msg)
-                print(msg)
-                if msg["final"]:
-                    print("Final ended with " + msg["alternatives"][0]["text"])
-
-        async with websockets.connect(STREAMING_ENDPOINT, **conn_kwargs) as websocket:
-            await asyncio.gather(
-                streamer(websocket),
-                transcriber(websocket),
-            )
+async def start_transcribe():
+    print("Start transcribing...")
+    await transcribe_streaming_grpc()
 
 if __name__ == "__main__":
-    CLIENT_ID = f'{YOUR_CLIENT_ID}'
-    CLIENT_SECRET = f'{YOUR_CLIENT_SECRET}'
-
-    client = RTZROpenAPIClient(CLIENT_ID, CLIENT_SECRET)
-    asyncio.run(client.streaming_transcribe())
-
+    asyncio.run(start_transcribe())

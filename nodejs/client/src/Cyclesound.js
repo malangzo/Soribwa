@@ -66,7 +66,7 @@ const Cyclesound = () => {
         console.log('Sending data to server:', nodejs);
 
         try {
-            const response = await fetch(`${nodejs}/audio_test`, {
+            const response = await fetch(`${fastapi}/audio_test`, {
                 method: 'POST',
                 body: formData,
             });

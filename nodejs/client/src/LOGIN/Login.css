@@ -1,11 +1,3 @@
-@import url('https://static.toss.im/tps/main.css');
-@import url('https://static.toss.im/tps/others.css');
-
-* {
-  font-family: 'Toss Product Sans';
-  text-decoration-line: none;
-}
-
 .fullscreen-container {
     margin: 0;
     padding: 0;

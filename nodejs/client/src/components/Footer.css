@@ -1,10 +1,6 @@
 @import url('https://static.toss.im/tps/main.css');
 @import url('https://static.toss.im/tps/others.css');
 
-* {
-  font-family: 'Toss Product Sans';
-}
-
 footer {
   font-family: 'Toss Product Sans';
   display: flex;

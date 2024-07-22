@@ -1,10 +1,6 @@
 @import url('https://static.toss.im/tps/main.css');
 @import url('https://static.toss.im/tps/others.css');
 
-* {
-  font-family: 'Toss Product Sans';
-}
-
 body {
   margin: 0;
   padding: 0;

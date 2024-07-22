@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import './Notice.css';
 import Editor from '../components/Editor';
 import { Link, useNavigate } from 'react-router-dom';
@@ -31,14 +31,14 @@ const NoticeWrite = () => {
         if (imgTag) {
             const src = imgTag.getAttribute('src');
             imageData = src && src.startsWith('data:image') ? src : null;
-            imgTag.replaceWith('');
+            imgTag.remove();
         }
     
-        const plainText = tmp.textContent || tmp.innerText || "";
-        return { plainText, imageData };
+        const text = tmp.innerHTML;
+        return { text, imageData };
     }
 
-    function resizeAndCompressImage(base64Str, maxWidth = 800, maxHeight = 600) {
+    async function resizeAndCompressImage(base64Str, maxWidth = 800, maxHeight = 600) {
         return new Promise((resolve) => {
             let img = new Image();
             img.src = base64Str;
@@ -65,18 +65,14 @@ const NoticeWrite = () => {
                 let ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+                resolve(canvas.toDataURL('image/png', 0.7)); 
             };
         });
-    }
-    
-    function onEditorChange(value) {
-        setContent(value)
     }
 
     const saveNotice = async () => {
         try {
-            const { plainText, imageData } = await stripHtmlAndExtractImage(content);
+            const { text, imageData } = stripHtmlAndExtractImage(content);
             
             let processedImageData = imageData;
             if (imageData && typeof imageData === 'string' && imageData.startsWith('data:image')) {
@@ -89,8 +85,8 @@ const NoticeWrite = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    title,
-                    content: plainText,
+                    title: title,
+                    content: text,
                     file: processedImageData && typeof processedImageData === 'string' 
                     ? processedImageData.split(',')[1] 
                     : null 
@@ -120,10 +116,6 @@ const NoticeWrite = () => {
         }
     };
 
-    useEffect(() => {
-        
-    }, []);
-    
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
             <Header toggleSidebar={toggleSidebar} />
@@ -137,7 +129,7 @@ const NoticeWrite = () => {
                     </div>
                     <div className='notice-body'>
                         <input type="text" maxLength="100" placeholder="제목" className="input-title" onChange={onTitleChange}/>
-                        <Editor value={content} onChange={onEditorChange} />
+                        <Editor value={content} onChange={setContent} />
                     </div>
                     <div className='notice-bottom'>
                         <button className='button' onClick={saveNotice}>저장</button>

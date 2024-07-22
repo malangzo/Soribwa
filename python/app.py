@@ -19,6 +19,7 @@ import shutil
 from pydub import AudioSegment
 from io import BytesIO
 from io import StringIO
+from io import DEFAULT_BUFFER_SIZE
 import io
 import json
 from starlette.requests import Request
@@ -348,86 +349,64 @@ async def delete_notice_data(notice_no: int):
 ######################################################################
 
 
-import requests
-import os.path
-import json
-from dotenv import load_dotenv
-
-# BASE_DIR 설정
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
-dotenv_path = os.path.join(BASE_DIR, '.env')
-
-# .env 파일 로드
-load_dotenv(dotenv_path)
-
-# 환경 변수 가져오기
-YOUR_CLIENT_ID = os.getenv("YOUR_CLIENT_ID")
-YOUR_CLIENT_SECRET = os.getenv("YOUR_CLIENT_SECRET")
-
-
-import asyncio
-import json
-import logging
-import os
-import time
-import subprocess
 from fastapi import FastAPI, WebSocket
-import websockets
 from pydantic import BaseModel
 from requests import Session
 from starlette.websockets import WebSocketDisconnect
+import vito_stt_client_pb2 as pb
+import vito_stt_client_pb2_grpc as pb_grpc
+import grpc
+from typing import AsyncIterator     
 
 API_BASE = "https://openapi.vito.ai"
 
-SAMPLE_RATE = 8000
-ENCODING = "LINEAR16"
+SAMPLE_RATE = 16000
+ENCODING = pb.DecoderConfig.AudioEncoding.LINEAR16
 BYTES_PER_SAMPLE = 2
 
-class RTZROpenAPIClient:
-    def __init__(self, client_id, client_secret):
-        self._logger = logging.getLogger(__name__)
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self._sess = Session()
-        self._token = None
+resp = requests.post(
+    'https://openapi.vito.ai/v1/authenticate',
+    data={'client_id': f'{YOUR_CLIENT_ID}',
+          'client_secret': f'{YOUR_CLIENT_SECRET}'}
+)
+resp.raise_for_status()
+            
+TOKEN = str(resp.json().get('access_token'))
+async def audio_stream_generator(websocket: WebSocket) -> AsyncIterator[pb.DecoderRequest]:
+    config = pb.DecoderConfig(sample_rate=SAMPLE_RATE, use_itn=True)
+    yield pb.DecoderRequest(streaming_config=config)
+    
+    try:
+        async for chunk in websocket.iter_bytes():
+            #print("pb", pb.DecoderRequest(audio_content=chunk))
+            yield pb.DecoderRequest(audio_content=chunk)
+    except WebSocketDisconnect:
+        pass
 
-    @property
-    def token(self):
-        if self._token is None or self._token["expire_at"] < time.time():
-            resp = self._sess.post(
-                API_BASE + "/v1/authenticate",
-                data={"client_id": self.client_id, "client_secret": self.client_secret},
-            )
-            resp.raise_for_status()
-            self._token = resp.json()
-        return self._token["access_token"]
+async def transcribe_streaming_grpc(websocket: WebSocket):
+    base = "grpc-openapi.vito.ai:443"
+    async with grpc.aio.secure_channel(base, credentials=grpc.ssl_channel_credentials()) as channel:
+        stub = pb_grpc.OnlineDecoderStub(channel)
+        metadata = (('authorization', 'Bearer ' + TOKEN),)
 
-    async def streaming_transcribe(self, websocket):
-        STREAMING_ENDPOINT = f"wss://{API_BASE.split('://')[1]}/v1/transcribe:streaming?sample_rate=16000&encoding=LINEAR16"
-        conn_kwargs = dict(extra_headers={"Authorization": "bearer " + self.token})
-
-        async with websockets.connect(STREAMING_ENDPOINT, **conn_kwargs) as stream:
-            while True:
-                webm_data = await websocket.receive_bytes()
-
-                await stream.send(webm_data)
-                
-                response = await stream.recv()
-                await websocket.send_text(response)
-
+        # Create the request iterator
+        req_iter = audio_stream_generator(websocket)
+        # Call the gRPC method with the request iterator and metadata
+        async for resp in stub.Decode(req_iter, metadata=metadata):
+            #print("resp:", resp)
+            for res in resp.results:
+                if res.is_final:
+                    print("Final Result:", res.alternatives[0].text)
+                    text = res.alternatives[0].text
+                    await websocket.send_text(text)
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     
-    CLIENT_ID = f'{YOUR_CLIENT_ID}'
-    CLIENT_SECRET = f'{YOUR_CLIENT_SECRET}'
-    
     await websocket.accept()
-    print(websocket.send_bytes)
-    
-    client = RTZROpenAPIClient(CLIENT_ID, CLIENT_SECRET)
     
     try:
-        await client.streaming_transcribe(websocket)
+        await transcribe_streaming_grpc(websocket)
     except WebSocketDisconnect:
         print("WebSocket disconnected")
+

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import './Notice.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -22,7 +23,6 @@ const NoticeContent = () => {
         fetchNotice();
     }, [notice_no]);
 
-
     const fetchNotice = async () => {
         try {
             const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeContent/${notice_no}`);
@@ -33,17 +33,15 @@ const NoticeContent = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
+            if (Object.keys(data).length === 0) {
+                throw new Error('게시글이 존재하지 않습니다.');
+            }
             setNotice(data);
         } catch (error) {
             console.error('Error fetching notice:', error);
-            alert(error.message || '게시글을 불러오는 데 실패했습니다.');
+            alert('게시글을 불러오는 데 실패했습니다.');
+            navigate('/NoticeList');
         }
-    };
-
-    function stripHtml(html) {
-        let tmp = document.createElement("DIV");
-        tmp.innerHTML = html;
-        return tmp.textContent || tmp.innerText || "";
     };
 
     function onClickUpdateNotice() {
@@ -85,7 +83,7 @@ const NoticeContent = () => {
                         <div className='date'>{notice.date && new Date(notice.date).toISOString().split('T')[0]}</div>
                     </div>
                     <div className='notice-body'>
-                        {stripHtml(notice.content)}
+                        <div className='content' dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(notice.content) }}></div>
                         {notice.file && (
                         <img src={`data:image/jpeg;base64,${notice.file}`} alt="게시글 이미지" style={{maxWidth: '100%', height: 'auto'}} />
                     )}

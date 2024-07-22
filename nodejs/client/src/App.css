@@ -1,33 +1,14 @@
 @import url('https://static.toss.im/tps/main.css');
 @import url('https://static.toss.im/tps/others.css');
 
+
 * {
   font-family: 'Toss Product Sans';
-  text-decoration-line: none;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Toss Product Sans';
-  background-color: #f0f0f0;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  position: relative;
-}
-
-main {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 10px 10px 62px 10px;
-  align-items: center;
-  background-color: #FFFFFF;
-}
+a:-webkit-any-link {
+    text-decoration: none;
+  }
 
 .notification {
   background-color: #f8d7da;
@@ -50,7 +31,28 @@ main {
 
 .notification-text {
   margin-left: 10px;
+}
 
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+}
+
+main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 10px 62px 10px;
+  align-items: center;
+  background-color: #FFFFFF;
 }
 
 .scroll-button {

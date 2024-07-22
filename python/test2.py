@@ -122,7 +122,7 @@ class RTZROpenAPIClient:
                     if buff is None or len(buff) == 0:
                         break
                     await websocket.send(buff)
-                await websocket.send("EOS")
+                #await websocket.send("EOS")
 
         async def transcriber(websocket):
             async for msg in websocket:

@@ -32,7 +32,7 @@ const App = () => {
 
     fetchNoticeTitle();
   }, []);
-
+  
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
       <Header toggleSidebar={toggleSidebar} />

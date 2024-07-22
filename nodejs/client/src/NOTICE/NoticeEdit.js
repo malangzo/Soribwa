@@ -11,11 +11,11 @@ const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
 
 const NoticeEdit = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-    const { notice_no } = useParams();
-    const location = useLocation();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const navigate = useNavigate();
+    const { notice_no } = useParams();
+    const location = useLocation();
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
@@ -49,10 +49,6 @@ const NoticeEdit = () => {
         setTitle(e.target.value);
     }
 
-    function onEditorChange(value) {
-        setContent(value)
-    }
-
     function stripHtmlAndExtractImage(html) {
         let tmp = document.createElement("DIV");
         tmp.innerHTML = html;
@@ -65,8 +61,8 @@ const NoticeEdit = () => {
             imgTag.replaceWith('');
         }
     
-        const plainText = tmp.textContent || tmp.innerText || "";
-        return { plainText, imageData };
+        const text = tmp.innerHTML;
+        return { text, imageData };
     }
 
     function resizeAndCompressImage(base64Str, maxWidth = 800, maxHeight = 600) {
@@ -96,14 +92,14 @@ const NoticeEdit = () => {
                 let ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                resolve(canvas.toDataURL('image/jpeg', 0.7));
+                resolve(canvas.toDataURL('image/png', 0.7));
             };
         });
     }
 
     const updateNotice = async () => {
         try {
-            const { plainText, imageData } = await stripHtmlAndExtractImage(content);
+            const { text, imageData } = await stripHtmlAndExtractImage(content);
             
             let processedImageData = imageData;
             if (imageData && typeof imageData === 'string' && imageData.startsWith('data:image')) {
@@ -117,7 +113,7 @@ const NoticeEdit = () => {
                 },
                 body: JSON.stringify({
                     title,
-                    content: plainText,
+                    content: text,
                     file: processedImageData && typeof processedImageData === 'string' 
                     ? processedImageData.split(',')[1] 
                     : null
@@ -154,7 +150,7 @@ const NoticeEdit = () => {
                     </div>
                     <div className='notice-body'>
                         <input type="text" maxLength="100" placeholder="제목" className="input-title" value={title} onChange={onTitleChange}/>
-                        <Editor value={content} onChange={onEditorChange} />
+                        <Editor value={content} onChange={setContent} />
                     </div>
                     <div className='notice-bottom'>
                         <button className='button' onClick={updateNotice}>수정</button>
