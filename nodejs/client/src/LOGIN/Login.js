@@ -20,12 +20,12 @@ const Login = () => {
 
     const userEmail = event => {
         setEmailValue(event.target.value);
-        console.log(event.target.value);
+        //console.log(event.target.value);
     };
 
     const userPassword = event => {
         setPasswordValue(event.target.value);
-        console.log(event.target.value);
+        //console.log(event.target.value);
     };
 
     const toggleShowPassword = () => setShowPassword(!showPassword);
@@ -45,25 +45,26 @@ const Login = () => {
             // console.log(result.data[0])
             // console.log("e: ", result.data[0].email, emailValue)
             // console.log("p: ", result.data[0].password, passwordValue)
-            console.log(result)
+            //console.log(result)
             if (result.data) {
-                if (result.data[0].email) {
-                    if (result.data[0].email == emailValue && result.data[0].password == passwordValue) {
+                if (result.status == 200) {
+                    //if (result.data[0].email == emailValue && result.data[0].password == passwordValue) {
                         sessionStorage.setItem("id", result.data[0].email);
                         sessionStorage.setItem("name", result.data[0].name);
                         sessionStorage.setItem("img", result.data[0].user_avatar);
+                        console.log('굿ㅎ')
                         navigate("/App")
                     }
                     // else if (result.data[0].email != emailValue) {
                     //     alert("이메일 틀림 ㅎ")
                     // }
-                    else if (result.data[0].email != emailValue || result.data[0].password != passwordValue) {
+                    else{// if (result.data[0].email != emailValue || result.data[0].password != passwordValue) {
                         alert("아이디나 비번 틀림 ㅎ")
                     }
                 }
-            } else {
-                alert("아이디나 비번 틀림 ㅎ")
-            }
+            // } else {
+            //     alert("아이디나 비번 틀림 ㅎ")
+            //}
             // sessionStorage.setItem("id", result.data[0].email);
             // sessionStorage.setItem("name", result.data[0].name);
             // sessionStorage.setItem("img", result.data[0].user_avatar);

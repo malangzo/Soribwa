@@ -50,7 +50,7 @@ const Livesound = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [image, setImage] = useState(null);
     const [isLoading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    //const [error, setError] = useState(null);
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
@@ -63,6 +63,14 @@ const Livesound = () => {
     const [analyser, setAnalyser] = React.useState();
     const [audioUrl, setAudioUrl] = React.useState();
     const [disabled, setDisabled] = React.useState(false);
+    const [geoCode, setGeoCode] = React.useState();
+
+    let dbPost = {
+        "timemap":"",
+        "label":"",
+        "decibel":0,
+    };
+
     var medimedi;
     var streamd;
     var sourced;
@@ -108,6 +116,29 @@ const Livesound = () => {
     var minVol;
     var vol;
 
+    /////
+
+    const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+    };
+
+    function success(pos) {
+        const crd = pos.coords;
+
+        console.log("위치: ")
+        console.log("Lati: ", crd.latitude);
+        console.log("Longti: ", crd.longitude);
+        console.log(`More or less ${crd.accuracy}meters.`);
+        setGeoCode(crd.latitude.toString() + crd.longitude.toString());
+        //sessionStorage.setItem("geo", crd.latitude.toString() + crd.longitude.toString());
+    }
+
+    function error(err) {
+        console.warn(`ERROR($(err.code)): ${err.message}`);
+    }
+
 
     const onRecAudio = () => {
         // 음원정보를 담은 노드를 생성하거나 음원을 실행또는 디코딩 시키는 일을 한다
@@ -132,6 +163,7 @@ const Livesound = () => {
         }
         // 마이크 사용 권한 획득
         const visualizer = document.getElementById("visualizer");
+        navigator.geolocation.getCurrentPosition(success,error, options);
         navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
             const mediaRecorder = new MediaRecorder(stream);
             MediaRecorder.isTypeSupported("audio/wav;codecs=MS_PCM")
@@ -208,6 +240,7 @@ const Livesound = () => {
 
 
     const REACT_APP_JAEHYUCK_NODEAPI=process.env.REACT_APP_JAEHYUCK_NODEAPI
+    const REACT_APP_FASTAPI=process.env.REACT_APP_FASTAPI
     
     // 사용자가 음성 녹음을 중지했을 때
     const offRecAudio = () => {
@@ -252,12 +285,65 @@ const Livesound = () => {
                     .then(response => {
                         lbimg.innerHTML = `<img id="label_img" src="${labelImages[response.data.label]}"></img>`;          
                         lbtxt.innerHTML = `${label_kor[response.data.label]}<br>${response.data.dB}dB`
-                        cachelog += `${response.data.date}    ${response.data.label}    ${response.data.dB}dB\n`;
+                        cachelog += `${response.data.date.substr(11,18)}    ${response.data.label}    ${response.data.dB}dB\n`;
                         sessionStorage.setItem("data", cachelog);
-                        var cachelog_array = cachelog.split('\n').slice(-100, -1);
-                    })
-                    .catch(error => {
-                        console.error('파일 전송 중 오류 발생:', error);
+                        
+                        dbPost.timemap = response.data.date;
+                        dbPost.label = response.data.label;
+                        dbPost.decibel = response.data.dB;
+
+                        function getLocation() {
+                            return new Promise((res, req) => {
+                                navigator.geolocation.getCurrentPosition(res,req, options)
+                            })
+                        }
+
+                        async function toDataBase() {
+                            var loca = await getLocation();
+                            console.log('geo: ', loca.coords.latitude, loca.coords.longitude)
+                            dbPost.timemap = loca.coords.latitude.toString() + loca.coords.longitude.toString() + dbPost.timemap;
+                            console.log(dbPost)
+                            const timemapRes = await fetch(`${REACT_APP_FASTAPI}/realtimeInsert`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(dbPost)
+                            })
+                        }
+                        toDataBase()
+                        })
+                        
+                        // async test() {
+                        //     const getTime = await getLocation();
+                        //     console.log("testset", getTime.coords.latitude)
+                        // }
+
+                        // console.log(timemap)
+                        // console.log(timemap().latitude,timemap().longitude)
+
+                        // async function postData() {
+                        //     try {
+                        //         const response = await fetch("/realtimeInsert", {
+                        //             method: "POST",
+                        //             body: {
+                        //                 timemap: 
+                        //             }
+                        //         })
+                        //     }
+
+                        // }
+
+                        // new Promise navigator.geolocation.getCurrentPosition(success,error, options)
+                        // .then(geo => {
+                        //     console.log('test',geo)
+                        // })
+
+                        // sessionStorage.setItem("geo", geoCode);
+                        // var cachelog_array = cachelog.split('\n').slice(-100, -1);
+                    //})
+                    .catch(err => {
+                        console.error('파일 전송 중 오류 발생:', err);
                     });
             };
 
@@ -269,35 +355,35 @@ const Livesound = () => {
         setDisabled(false);
     };
 
-    const onSubmitAudioFile = React.useCallback(() => {
-        if (audioUrld) {
-            console.log('URL check', URL.createObjectURL(audioUrld)); // 출력된 링크에서 녹음된 오디오 확인 가능
-        }
-        // File 생성자를 사용해 파일로 변환
-        const sound = new File([audioUrld], "soundBlob", { lastModified: new Date().getTime(), type: "audio/wav" });
+    // const onSubmitAudioFile = React.useCallback(() => {
+    //     if (audioUrld) {
+    //         console.log('URL check', URL.createObjectURL(audioUrld)); // 출력된 링크에서 녹음된 오디오 확인 가능
+    //     }
+    //     // File 생성자를 사용해 파일로 변환
+    //     const sound = new File([audioUrld], "soundBlob", { lastModified: new Date().getTime(), type: "audio/wav" });
 
-        const chn = document.getElementById("inner");
-        let uploadFileAxios = (file) => {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('timestamp', 'gigi')
-            return axios.post(`${REACT_APP_JAEHYUCK_NODEAPI}/model_test`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-                .then(response => {
-                    console.log(response.data);
-                })
-                .catch(error => {
-                    console.error('파일 전송 중 오류 발생:', error);
-                });
-        };
-        let up_test = uploadFileAxios(sound);
+    //     const chn = document.getElementById("inner");
+    //     let uploadFileAxios = (file) => {
+    //         const formData = new FormData();
+    //         formData.append('file', file);
+    //         formData.append('timestamp', 'gigi')
+    //         return axios.post(`${REACT_APP_JAEHYUCK_NODEAPI}/model_test`, formData, {
+    //             headers: {
+    //                 'Content-Type': 'multipart/form-data',
+    //             },
+    //         })
+    //             .then(response => {
+    //                 console.log(response.data);
+    //             })
+    //             .catch(error => {
+    //                 console.error('파일 전송 중 오류 발생:', error);
+    //             });
+    //     };
+    //     let up_test = uploadFileAxios(sound);
 
-        setDisabled(false);
+    //     setDisabled(false);
 
-    }, [audioUrl]);
+    // }, [audioUrl]);
 
 
     const audioInterval = async () => {

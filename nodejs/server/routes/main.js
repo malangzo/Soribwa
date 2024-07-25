@@ -2,11 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const axios = require('axios');
-const request = require('request');
 const cors = require('cors');
 const FormData = require('form-data');
-const path = require('path');
-const fs = require('fs');
 const app = express();
 
 app.use(bodyParser.json());
@@ -23,13 +20,13 @@ const upload = multer({
     storage: storage
 })
 
-const fastapi = process.env.Fastapi;
+const FASTAPI = process.env.FASTAPI;
 
 
 app.get('/cycle/graph', async (req, res) => {
 
     try {
-        const response = await axios.get(`${fastapi}/cycle/draw-graph`);
+        const response = await axios.get(`${FASTAPI}/cycle/draw-graph`);
 
         if (response.status === 200) {
             const data = response.data;
@@ -56,7 +53,7 @@ app.post('/cycle/daygraph', async (req, res) => {
         const { startdate, enddate } = req.body;
         console.log('Received dates:', startdate, enddate);
 
-        const response = await axios.post(`${fastapi}/cycle/draw-day-graph`, { startdate, enddate }, {
+        const response = await axios.post(`${FASTAPI}/cycle/draw-day-graph`, { startdate, enddate }, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -88,7 +85,7 @@ app.post('/audio_test', upload.single("file"), async (req, res) => {
     formData.append("timestamp", req.body.timestamp);
 
 
-    await axios.post(`${fastapi}/cycle/record-analyze`, formData, {
+    await axios.post(`${FASTAPI}/cycle/record-analyze`, formData, {
     })
     .then(function (result) {
         console.log("result status check: ", result.status);

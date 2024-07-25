@@ -28,8 +28,8 @@ const rootElement = document.getElementById('root');
 
 ReactDOM.createRoot(rootElement).render(
   <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID}
-    onScriptLoadError={() => console.log("실패")}
-    onScriptLoadSuccess={() => console.log("성공")}>
+    onScriptLoadError={() => console.log("실패.ㅎ")}
+    onScriptLoadSuccess={() => console.log("성공.ㅎ")}>
     <BrowserRouter>
       <Routes>
         <Route path='/App' element={<App />} />

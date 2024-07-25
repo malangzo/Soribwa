@@ -15,6 +15,8 @@ const Conversation = () => {
     const [audioCtx, setAudioCtx] = useState(null);
     const [source, setSource] = useState(null);
     const [socket, setSocket] = useState(null);
+
+    const [isLoading, setIsLoading] = useState(false);
     const [transcriptions, setTranscriptions] = useState([]);
     const bufferSize = 1024;
     const chunkSize = 1024; // 청크 크기 설정
@@ -22,12 +24,14 @@ const Conversation = () => {
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
     };
+    
+    const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
 
     const startRecording = async () => {
         if (!isRecording) {
+            setIsLoading(true);
             setIsRecording(true);
 
-            // WebSocket을 통해 서버와 연결합니다
             const ws = new WebSocket('wss://mfastapi.soribwa.com/ws');
             setSocket(ws);
 
@@ -36,9 +40,11 @@ const Conversation = () => {
             };
 
             ws.onmessage = (event) => {
-                const message = event.data;
+                const message = JSON.parse(event.data);
                 console.log('Received message:', message);
-                setTranscriptions((prev) => [...prev, message]);
+
+                setTranscriptions(prev => [...prev, { text: message.text, emotion: message.emotion }]);
+
             };
 
             ws.onclose = () => {
@@ -53,14 +59,12 @@ const Conversation = () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-                // AudioContext와 ScriptProcessorNode 설정
                 const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
                 setAudioCtx(ctx);
 
                 const scriptNode = ctx.createScriptProcessor(bufferSize, 1, 1);
                 const sourceNode = ctx.createMediaStreamSource(stream);
                 setSource(sourceNode);
-
                 sourceNode.connect(scriptNode);
                 scriptNode.connect(ctx.destination);
 
@@ -85,9 +89,11 @@ const Conversation = () => {
                 };
 
                 console.log('Recording started');
+                setIsLoading(false);
             } catch (error) {
                 console.error('Error accessing media devices:', error);
                 setIsRecording(false);
+                setIsLoading(false);
             }
         }
     };
@@ -116,15 +122,23 @@ const Conversation = () => {
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
             <main>
+                <div className='conversation-title'>대화 감정 분석</div>
                 <ConvInfo />
-                <button className="play-button" onClick={isRecording ? stopRecording : startRecording}>
-                    <img src={isRecording ? stopIcon : startIcon} alt={isRecording ? 'Stop' : 'Start'} />
-                </button>
-                <div className='transcriptions'>
+                {isLoading && <div className="loading-message">Loading...</div>}
+                <div className='script-container'>
                     {transcriptions.map((transcription, index) => (
-                        <p key={index}>{transcription}</p>
+                        transcription.text && transcription.text.trim() !== '' && (
+                        <div className='transcription' key={index}>
+                            <p className={`emotion-${transcription.emotion}`}>
+                                {transcription.text}
+                            </p>
+                        </div>
+                        )
                     ))}
                 </div>
+                <button id="transcript-button" className="play-button" onClick={isRecording ? stopRecording : startRecording}>
+                    <img src={isRecording ? stopIcon : startIcon} alt={isRecording ? 'Stop' : 'Start'} />
+                </button>
             </main>
             <Footer />
         </div>

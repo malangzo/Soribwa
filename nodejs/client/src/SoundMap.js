@@ -1,27 +1,36 @@
-import React, { useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import KakaoMap from './Kakaomap';
 import MapInfo from './MapInfo';
+import Filter from './Filter';
 
 
 const SoundMap = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [fetchData, setFetchData] = useState(null);
+  const kakaomapRef = useRef(null);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
+  useEffect(() => {
+      if (kakaomapRef.current) {
+        setFetchData(() => kakaomapRef.current.fetchData);
+      }
+  }, []);
 
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>
+        {fetchData && <Filter fetchData={fetchData} />}
         <MapInfo />
-        <KakaoMap />
+        <KakaoMap ref={kakaomapRef}/>
       </main>
       <Footer />
     </div>

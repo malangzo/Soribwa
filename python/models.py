@@ -15,7 +15,7 @@ class CycleData(Base):
 class Realtime_log(Base):
     __tablename__ = 'realtime_log'
     
-    timemap = Column(String(39), primary_key=True, nullable=False)
+    timemap = Column(String(40), primary_key=True, nullable=False)
     label = Column(String(20), nullable=False)
     decibel = Column(SmallInteger, nullable=False)
 

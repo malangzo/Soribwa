@@ -7,8 +7,9 @@ import setting_sidebarIcon from '../images/setting_sidebar.png';
 import data_sidebarIcon from '../images/data_sidebar.png';
 import map_sidebarIcon from '../images/map_sidebar.png';
 import userAvatarDefault from '../images/userAvatar.png'; 
+import logout_sidebarIcon from '../images/logout_sidebar.png';
 
-//import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -17,6 +18,10 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     const handleBackButtonClick = () => {
         onClose();
+    };
+    const handleLogout = () => {
+        sessionStorage.clear();
+        window.location.href = '/';
     };
 
     return (
@@ -52,12 +57,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                             소음 지도
                         </a>
                     </li>
-                    <li>
-                        <a href="/Graph">
-                            <img src={data_sidebarIcon} alt="내 데이터" />
-                            내 데이터
-                        </a>
-                    </li>
                     <li className="spacer"></li>
                     <li>
                         <a href="/Setting">
@@ -65,6 +64,13 @@ const Sidebar = ({ isOpen, onClose }) => {
                             설정
                         </a>
                     </li>
+                    <li>
+                        <Link to="#" onClick={handleLogout}>
+                            <img src={logout_sidebarIcon} alt="로그 아웃" />
+                            로그 아웃
+                        </Link>
+                    </li>
+                    
                 </ul>
             </nav>
         </div>

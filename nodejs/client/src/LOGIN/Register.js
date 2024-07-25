@@ -12,6 +12,11 @@ const Register = () => {
     const [passwordcheckValue, setPasswordcheckValue] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordCheck, setShowPasswordCheck] = useState(false);
+    // + Email Auth Code Email Send Return Value
+    // + Email Auth Code Input Tag Value 
+    // + Email Auth Valid Check
+    // + Each Function +3
+
     const navigate = useNavigate()
     const REGISTER_URL = process.env.REACT_APP_REGISTER_URL;
 
@@ -49,7 +54,8 @@ const Register = () => {
     
                 const result = await response.json();
                 if (result.status == 200) {
-                    console.log("성공: ", result);
+                    //console.log("성공: ", result);
+                    console.log("굿굿")
                     navigate("/")
                     alert("훼왢개엛 덺")
                 } 
@@ -60,7 +66,9 @@ const Register = () => {
             alert("비밀번호가 일치하지 않습니다.");
         }  
     };
-
+    // + Email Auth button
+    // + Email Auth Code input Tag ++ Email Auth Code Input Check button
+    
     return (
         <div className="fullscreen-container">
             <div className="main-logo"><img src={soribwa_yellow} alt="Soribwa" className="soribwa-main-logo" /></div>

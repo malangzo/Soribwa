@@ -33,6 +33,7 @@
     width: 100%;
     font-family: 'Toss Product Sans';
     font-weight: bold;
+    background-color: #0532A9;
 }
 
 #email, #name, #password, #passwordcheck {

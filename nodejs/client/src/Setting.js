@@ -27,6 +27,34 @@ const Setting = () => {
     window.location.href = '/';
   };
 
+  const handleDeleteAccount = async () => {
+    if (window.confirm("정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
+      const userId = sessionStorage.getItem("id");
+      if (!userId) {
+        alert("사용자 ID를 찾을 수 없습니다.");
+        return;
+      }
+  
+      try {
+        const response = await fetch(`${process.env.REACT_APP_FASTAPI}/userDelete?id=${encodeURIComponent(userId)}`, {
+          method: 'DELETE',
+        });
+  
+        if (response.ok) {
+          alert("회원 탈퇴가 완료되었습니다.");
+          sessionStorage.clear();
+          window.location.href = '/';
+        } else {
+          const errorData = await response.json();
+          alert(`회원 탈퇴 실패: ${errorData.message}`);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert("회원 탈퇴 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
       <Header toggleSidebar={toggleSidebar} />
@@ -49,7 +77,9 @@ const Setting = () => {
             <Link to="#" onClick={handleLogout}>
               <button className='button'>로그아웃</button>
             </Link>
-            <button className='button'>회원 탈퇴</button>
+            <Link to="#" onClick={handleDeleteAccount}>
+              <button className='button'>회원 탈퇴</button>
+            </Link>
           </div>
         </div>
       </main>

@@ -19,6 +19,7 @@ const GoogleAuthLogin = () => {
                 shape="circle"
                 type="icon"
                 useOneTap
+                use_fedcm_for_prompt="false"
             />
         </>
     );

@@ -1,27 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 
 const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
 
-const KakaoMap = () => {
+const KakaoMap = forwardRef((props, ref) => {
   const [markerData, setMarkerData] = useState([]);
 
-  useEffect(() => {
-    // 소음 데이터를 가져오는 함수
-    const fetchData = async () => {
+  const fetchData = async (type = 'all') => {
       try {
-        const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/getNoiseData`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setMarkerData(data); // 소음 데이터를 상태에 저장
-      } catch (error) {
-        console.error('Error fetching noise data:', error);
-      }
-    };
+          let url = '';
+          switch (type) {
+              case 'oneDay':
+                  url = `${REACT_APP_YUJUNG_FASTAPI}/getNoiseDataOneDay`;
+                  break;
+              case 'week':
+                  url = `${REACT_APP_YUJUNG_FASTAPI}/getNoiseDataWeek`;
+                  break;
+              default:
+                  url = `${REACT_APP_YUJUNG_FASTAPI}/getNoiseData`;
+          }
 
-    fetchData();
+          const response = await fetch(url);
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          setMarkerData(data); // 소음 데이터를 상태에 저장
+      } catch (error) {
+          console.error('Error fetching noise data:', error);
+      }
+  };
+
+  useEffect(() => {
+      fetchData('all'); // 초기에는 전체 데이터를 가져옴
   }, []);
+
+  useImperativeHandle(ref, () => ({
+    fetchData
+  }));
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -90,10 +105,10 @@ const KakaoMap = () => {
 
           // 마커 이미지를 저장할 딕셔너리
           const Images = {
-            dog_bark: 'https://raw.githubusercontent.com/malangzo/images/86bc2572f08e878b447e0325915e7ee0d0643bea/dog_bark.svg',
-            construction_noise: 'https://raw.githubusercontent.com/malangzo/images/86bc2572f08e878b447e0325915e7ee0d0643bea/construct.svg',
-            drill_noise: 'https://raw.githubusercontent.com/malangzo/images/86bc2572f08e878b447e0325915e7ee0d0643bea/drill.svg',
-            car_horn: 'https://raw.githubusercontent.com/malangzo/images/86bc2572f08e878b447e0325915e7ee0d0643bea/car_horn.svg',
+            dog_bark: 'https://github.com/malangzo/images/blob/3fcc31f09c9f0ac353744f3d62d21167f6cbccb7/dog_bark.png?raw=true',
+            jackhammer: 'https://github.com/malangzo/images/blob/3fcc31f09c9f0ac353744f3d62d21167f6cbccb7/jackhammer.png?raw=true',
+            drilling: 'https://github.com/malangzo/images/blob/3fcc31f09c9f0ac353744f3d62d21167f6cbccb7/drilling.png?raw=true',
+            car_horn: 'https://github.com/malangzo/images/blob/3fcc31f09c9f0ac353744f3d62d21167f6cbccb7/car_horn.png?raw=true',
           };
 
           const handleMarkerData = () => {
@@ -128,7 +143,7 @@ const KakaoMap = () => {
                 circleOptions = {
                   strokeColor: '#e33f36',
                   fillColor: '#f76860',
-                  radius: 60,
+                  radius: 50,
                 };
               } else if (data.decibel >= 80) {
                 circleOptions = {
@@ -184,6 +199,6 @@ const KakaoMap = () => {
   }, [markerData]);
 
   return <div id="map" style={{ width: '100%', height: '93%', position: 'fixed' }}></div>;
-};
+});
 
 export default KakaoMap;
