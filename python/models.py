@@ -28,7 +28,7 @@ class User_info(Base):
     name = Column(String(20), nullable=False)
     role = Column(String(4), default='user')
     expire_date = Column(String(19), nullable=True)
-    user_avatar = Column(LargeBinary, nullable=True)
+    user_avatar = Column(Text, nullable=True)
 
 class Notice_board(Base):
     __tablename__ = 'notice_board'

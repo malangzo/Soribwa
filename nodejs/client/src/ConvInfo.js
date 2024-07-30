@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import questionmark from './images/questionmark.png';
 
+<link rel="manifest" href="/manifest.json" />
+
 const ConvInfo = () => {
   const [showInfo, setShowInfo] = useState(true);
 

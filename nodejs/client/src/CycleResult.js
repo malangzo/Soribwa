@@ -7,6 +7,8 @@ import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 import axios from 'axios';
 
+<link rel="manifest" href="/manifest.json" />
+
 const nodejs = process.env.REACT_APP_NODEAPI;
 
 const CycleResult = () => {

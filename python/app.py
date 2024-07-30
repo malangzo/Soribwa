@@ -29,6 +29,8 @@ from datetime import datetime, timedelta
 import json
 from typing import Optional
 from urllib.parse import unquote_plus
+from google.oauth2 import service_account
+from google.auth.transport.requests import Request as GoogleAuthRequest
 
 # BASE_DIR 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
@@ -46,11 +48,34 @@ YOUR_CLIENT_ID = os.getenv("YOUR_CLIENT_ID")
 YOUR_CLIENT_SECRET = os.getenv("YOUR_CLIENT_SECRET")
 HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 FASTAPI = os.getenv("FASTAPI")
+FCM_API_URL = os.getenv("FCM_API_URL")
 
 app = FastAPI()
 
 db = db_conn()
 session = db.sessionmaker()
+
+# 서비스 계정 JSON 파일 경로
+SERVICE_ACCOUNT_FILE = 'src/soundproject-26e1d-firebase-adminsdk-ntoea-046129bd6b.json'
+
+def get_access_token():
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE,
+        scopes=['https://www.googleapis.com/auth/cloud-platform']
+    )
+    credentials.refresh(GoogleAuthRequest())
+    return credentials.token
+
+class Token(BaseModel):
+    token: str
+
+# 디바이스 토큰을 저장할 데이터베이스
+device_tokens = []
+
+@app.post("/saveToken")
+async def save_token(token: Token):
+    device_tokens.append(token.token) 
+    return {"status": "Token saved"}
 
 
 def extract_feature(file_name):
@@ -288,20 +313,42 @@ class NoticeUpdate(BaseModel):
     content: str
     file: Optional[str] = None
 
-@app.get("/noticeList")
+class NoticeItem(BaseModel):
+    no: int
+    title: str
+    content: str | None
+    date: datetime
+    file: str | None
+
+    class Config:
+        orm_mode = True
+
+from typing import List
+
+@app.get("/noticeList", response_model=List[NoticeItem])
 async def get_notice_list():
-    query = session.query(Notice_board).all()
-    return query
+    try:
+        query = session.query(Notice_board).all()
+        return query
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 @app.get("/noticeFirst")
 async def get_notice_first():
     query = session.query(Notice_board.title).order_by(desc(Notice_board.no)).first()
     return {"title": query[0]}
 
-@app.get("/noticeContent/{notice_no}")
+@app.get("/noticeContent/{notice_no}", response_model=NoticeItem)
 async def get_notice_content(notice_no: int):
-    query = session.query(Notice_board).filter(Notice_board.no == notice_no).first()
-    return query
+    try:
+        query = session.query(Notice_board).filter(Notice_board.no == notice_no).first()
+        
+        if query is None:
+            raise HTTPException(status_code=404, detail="공지사항을 찾을 수 없습니다")
+            
+        return query
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 @app.post("/noticeInsert")
 async def save_notice_data(notice: NoticeCreate):
@@ -309,6 +356,34 @@ async def save_notice_data(notice: NoticeCreate):
     session.add(insert)
     session.commit()
     session.refresh(insert)
+    result = {"notice_no": insert.no}
+    payload = {
+        "message": {
+            "notification": {
+                "title": "New Notice",
+                "body": f"New notice added: {notice.title}"
+            },
+            "topic": "all" 
+        }
+    }
+    
+    # 액세스 토큰 가져오기
+    access_token = get_access_token()
+    print(access_token)
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+
+    try:
+        response = requests.post(FCM_API_URL, json=payload, headers=headers)
+        response.raise_for_status()
+
+    except requests.exceptions.HTTPError as err:
+        print(f"FCM API request failed: {err}")
+        raise HTTPException(status_code=500, detail="Failed to send push notification")
+
     result = {"notice_no": insert.no}
     return result
 
@@ -387,16 +462,42 @@ async def get_noise_data_one_day():
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 @app.delete("/userDelete")
-async def delete_user_data(id: str):
+async def delete_user_data(id: str, role: str):
     decoded_id = unquote_plus(id)
-    delete = session.query(User_info).filter(User_info.email == decoded_id).first()
+    decoded_role = unquote_plus(role)
+    delete = session.query(User_info).filter((User_info.email == decoded_id) & (User_info.role == decoded_role)).first()
     session.delete(delete)
     session.commit()
     result = session.query(User_info).all()
     return result
 
+class UserUpdate(BaseModel):
+    id: str
+    name: str
+    img: str
+    role: str
 
+@app.put("/userUpdate")
+async def update_user_data(user_data: UserUpdate):
+    try:
+        decoded_id = unquote_plus(user_data.id)
+        decoded_role = unquote_plus(user_data.role)
+        update = session.query(User_info).filter((User_info.email == decoded_id)&(User_info.role == decoded_role)).first()
+        if not update:
+            raise HTTPException(status_code=404, detail="User not found")
 
+        update.name = user_data.name
+        update.user_avatar = user_data.img
+
+        session.commit()
+        session.refresh(update)
+        return {"message": "User updated successfully", "user": update}
+
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        session.close()
 
 ######################################################################
 
@@ -539,24 +640,9 @@ async def transcribe_streaming_grpc(websocket: WebSocket):
 
                         start_offset = int(start_time * (SAMPLE_RATE / 1000))
                         end_offset = int(end_time * (SAMPLE_RATE / 1000))
-                        print("start_offset ::::::::::::::::::: ", start_offset)
-                        print("end_offset ::::::::::::::::::: ", end_offset)
                         
-                        model_name = "nlp04/korean_sentiment_analysis_dataset3_best"
-                        tokenizer = AutoTokenizer.from_pretrained(model_name, token=HUGGINGFACE_TOKEN)
-                        model = AutoModelForSequenceClassification.from_pretrained(model_name, token=HUGGINGFACE_TOKEN)
-                        
-                        bertClassifier = pipeline(
-                            "text-classification",
-                            model=model,
-                            tokenizer=tokenizer,
-                            device="cpu",  # CPU 사용 (GPU 사용 시 "cuda"로 설정)
-                            top_k=None
-                        )
-                        
-                        result = bertClassifier(text)[0]
-                        print(result)
-                        
+                        text_result = await text_emotion(text)
+                    
                         if audio_chunks:
                             audio_data = audio_chunks[start_offset:end_offset]
                             byte_data = struct.pack('<' + 'h'*len(audio_data), *audio_data)
@@ -576,34 +662,36 @@ async def transcribe_streaming_grpc(websocket: WebSocket):
                             print("WAV 파일이 생성되었습니다: output.wav")
                             wav_buffer.seek(0)
                             
-                            audio_features = get_features(wav_buffer)
-                            X_audio = [audio_features]
-                            audio_features_df = pd.DataFrame(X_audio)
+                            if(text_result != '중립'):
+                                audio_features = get_features(wav_buffer)
+                                X_audio = [audio_features]
+                                audio_features_df = pd.DataFrame(X_audio)
 
-                            text_data = pd.DataFrame({'sentence': [text]})
-                            final_df = pd.concat([audio_features_df, text_data], axis=1)
+                                text_data = pd.DataFrame({'sentence': [text]})
+                                final_df = pd.concat([audio_features_df, text_data], axis=1)
 
-                            txt_embed = TextEmbedding(model_name='jhgan/ko-sroberta-sts')
-                            X = txt_embed.transform(final_df)
+                                txt_embed = TextEmbedding(model_name='jhgan/ko-sroberta-sts')
+                                X = txt_embed.transform(final_df)
 
-                            X = scaler.transform(X)
-                            X = np.expand_dims(X, axis=2)
+                                X = scaler.transform(X)
+                                X = np.expand_dims(X, axis=2)
 
-                            predictions = pre_trained_model.predict(X)
-                            predicted_labels = np.argmax(predictions, axis=1)
-                            predicted_labels = predicted_labels[0]
-                            
-                            if(predicted_labels == 2):
-                                predicted_labels = 1
-                            elif(predicted_labels == 4):
-                                predicted_labels = 6
+                                predictions = pre_trained_model.predict(X)
+                                predicted_labels = np.argmax(predictions, axis=1)
+                                predicted_labels = predicted_labels[0]
+                                
+                                if(predicted_labels == 2):
+                                    predicted_labels = 1
+                                elif(predicted_labels == 4):
+                                    predicted_labels = 6
 
-                            predicted_emotions = ['angry', 'anxious', 'embarrassed', 'happy', 'hurt', 'neutrality', 'sad']
-                            predicted_emotion = predicted_emotions[predicted_labels]
-                            
-                            
-                            print(f"Predicted emotion: {predicted_emotion}")
-                            
+                                predicted_emotions = ['angry', 'anxious', 'embarrassed', 'happy', 'hurt', 'neutrality', 'sad']
+                                predicted_emotion = predicted_emotions[predicted_labels]
+                                
+                                
+                                print(f"Predicted emotion: {predicted_emotion}")
+                            else:
+                                predicted_emotion = 'neutrality'
                             audio_chunks = audio_chunks[end_offset:]
                             
                             message = json.dumps({
@@ -624,6 +712,26 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         print("WebSocket disconnected")
  
+
+@app.post("/textemotion")
+async def text_emotion(text):
+    model_name = "nlp04/korean_sentiment_analysis_dataset3_best"
+    tokenizer = AutoTokenizer.from_pretrained(model_name, token=HUGGINGFACE_TOKEN)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, token=HUGGINGFACE_TOKEN)
+    
+    bertClassifier = pipeline(
+        "text-classification",
+        model=model,
+        tokenizer=tokenizer,
+        device="cpu", 
+        top_k=None
+    )
+    
+    result = bertClassifier(text)[0]
+    first_label = result[0]['label']
+    print(first_label)
+    return first_label
+    
 
 
 ######################################################################
@@ -658,3 +766,34 @@ async def predict_emotion(file: UploadFile = File(...), text: str = Form(...)):
 
     print(f"Predicted emotion: {predicted_emotion}")
     #return {"predicted_emotion": predicted_emotion}
+    
+
+
+
+
+def send_push_notification(fcm_token, token):
+    url = 'https://fcm.googleapis.com/v1/projects/soundproject-26e1d/messages:send'
+    headers = {
+        'Authorization': f'Bearer {fcm_token}',
+        'Content-Type': 'application/json',
+    }
+    payload = {
+        "message": {
+            "notification": {
+                "title": "New Notice",
+                "body": "New notice added"
+            },
+            "token": token
+        }
+    }
+
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    print("Response:", response.json())  # 응답을 로그로 확인합니
+
+# 예시 토큰
+fcm_token = get_access_token()
+token = "dH_fM1x6mXv6rvPEnIDs4C:APA91bHefz8Dmg4671QmlGgVqx6QddwAXt9ZTtzlncumuB8I_aV8gjNja5PVbK-jqXTb7CqtUz9TzT_aw_0vHOwYgvDt8ssjyEwbseyeQSqBuaX4FM1U16eNvSk8ts3Nen4RX2cP2zVz"
+
+send_push_notification(fcm_token, token)
+    
+

@@ -11,6 +11,8 @@ import logout_sidebarIcon from '../images/logout_sidebar.png';
 
 import { Link } from "react-router-dom";
 
+<link rel="manifest" href="/manifest.json" />
+
 
 const Sidebar = ({ isOpen, onClose }) => {
     const [userAvatar, setUserAvatar] = useState(sessionStorage.getItem("img") ? sessionStorage.getItem("img"):userAvatarDefault);

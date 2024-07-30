@@ -5,6 +5,8 @@ import backIcon from '../images/back.png';
 import soribwa from '../images/soribwa.png';
 import { useNavigate, useLocation } from "react-router-dom";
 
+<link rel="manifest" href="/manifest.json" />
+
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const location = useLocation();

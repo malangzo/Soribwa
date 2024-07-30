@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import './App.css';
 import filtericon from './images/filtericon.png';
 
+<link rel="manifest" href="/manifest.json" />
+
 const Filter = ({ fetchData }) => {
     const [showButton, setShowButton] = useState(false);
 

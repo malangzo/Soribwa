@@ -6,6 +6,8 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+<link rel="manifest" href="/manifest.json" />
+
 const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
 
 const NoticeWrite = () => {

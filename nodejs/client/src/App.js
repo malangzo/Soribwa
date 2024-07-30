@@ -10,6 +10,9 @@ import conversationIcon from './images/conversation.png';
 import livesoundIcon from './images/livesound.png';
 import megaphone from './images/megaphone.png';
 
+<link rel="manifest" href="/manifest.json" />;
+<link rel="apple-touch-startup-image" href="image/loading.png" media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 2)"></link>
+
 const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
 
 const App = () => {

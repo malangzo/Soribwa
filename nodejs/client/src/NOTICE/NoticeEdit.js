@@ -6,6 +6,8 @@ import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 
+<link rel="manifest" href="/manifest.json" />
+
 const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
 const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
 

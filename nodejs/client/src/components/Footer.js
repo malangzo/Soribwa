@@ -6,6 +6,8 @@ import homeIcon from '../images/home.png';
 import mapIcon from '../images/map.png';
 import settingIcon from '../images/setting.png';
 
+<link rel="manifest" href="/manifest.json" />
+
 const Footer = () => {
   return (
     <footer>

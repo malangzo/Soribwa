@@ -7,6 +7,7 @@ import KakaoMap from './Kakaomap';
 import MapInfo from './MapInfo';
 import Filter from './Filter';
 
+<link rel="manifest" href="/manifest.json" />
 
 const SoundMap = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);

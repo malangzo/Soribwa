@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import GoogleAuthLogin from "./GoogleAuthLogin";
+//import GoogleAuthLogin from "./GoogleAuthLogin";
+import GoogleLogin from "./GoogleLogin";
 import KakaoOAuth from "./KakaoOAuth.js";
 import Naver from "./Naver";
 import soribwa_yellow from '../images/soribwa_yellow.png';
 import show from '../images/eyes.png';
 import hidden from '../images/hidden.png';
+import Swal from "sweetalert2";
+
+<link rel="manifest" href="/manifest.json" />;
 
 const Login = () => {
     const [emailValue, setEmailValue] = useState("");
@@ -20,17 +24,17 @@ const Login = () => {
 
     const userEmail = event => {
         setEmailValue(event.target.value);
-        //console.log(event.target.value);
     };
 
     const userPassword = event => {
         setPasswordValue(event.target.value);
-        //console.log(event.target.value);
     };
 
     const toggleShowPassword = () => setShowPassword(!showPassword);
 
     async function login() {
+        if (emailValue == '' && passwordValue == ''){Swal.fire({icon:'error', title:'',text:'이메일과 비밀번호를 입력해주세요.',confirmButtonText:'확인'})}
+        else{
         try {
             var data = { "email": emailValue, "password": passwordValue };
             const response = await fetch(LOGIN_URL, {
@@ -42,38 +46,23 @@ const Login = () => {
             });
 
             const result = await response.json();
-            // console.log(result.data[0])
-            // console.log("e: ", result.data[0].email, emailValue)
-            // console.log("p: ", result.data[0].password, passwordValue)
-            //console.log(result)
-            if (result.data) {
+
+            if (result.status) {
                 if (result.status == 200) {
-                    //if (result.data[0].email == emailValue && result.data[0].password == passwordValue) {
-                        sessionStorage.setItem("id", result.data[0].email);
-                        sessionStorage.setItem("name", result.data[0].name);
-                        sessionStorage.setItem("img", result.data[0].user_avatar);
-                        console.log('굿ㅎ')
+                        sessionStorage.setItem("id", result.data.email);
+                        sessionStorage.setItem("name", result.data.name);
+                        sessionStorage.setItem("img", result.data.user_avatar);
+                        sessionStorage.setItem("role", result.data.role);
                         navigate("/App")
                     }
-                    // else if (result.data[0].email != emailValue) {
-                    //     alert("이메일 틀림 ㅎ")
-                    // }
-                    else{// if (result.data[0].email != emailValue || result.data[0].password != passwordValue) {
-                        alert("아이디나 비번 틀림 ㅎ")
+                    else{
+                        Swal.fire({icon:'error', title:'',text:result.message,confirmButtonText:'확인'});
                     }
                 }
-            // } else {
-            //     alert("아이디나 비번 틀림 ㅎ")
-            //}
-            // sessionStorage.setItem("id", result.data[0].email);
-            // sessionStorage.setItem("name", result.data[0].name);
-            // sessionStorage.setItem("img", result.data[0].user_avatar);
-            // if (result.data) {
-            //     // Handle success
-            // }
         } catch (error) {
-            console.error("실패: ", error);
+            console.error(error)
         }
+    }
     };
 
     const SignUp = () => {
@@ -95,7 +84,7 @@ const Login = () => {
                     <div className="btn_case">
                         <button id="login" onClick={login}>LOGIN</button>&ensp;&ensp;&ensp;<button id="signup" onClick={SignUp}>SIGN UP</button><p />
                         <div id="social_login">
-                            <GoogleAuthLogin />
+                            <GoogleLogin/>
                             <KakaoOAuth />
                             <Naver />
                         </div>

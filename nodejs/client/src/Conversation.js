@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 import './Cycle.css';
 import './Conversation.css';
@@ -8,6 +8,8 @@ import Footer from './components/Footer';
 import ConvInfo from './ConvInfo';
 import startIcon from './images/start.png';
 import stopIcon from './images/stop.png';
+
+<link rel="manifest" href="/manifest.json" />
 
 const Conversation = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -20,6 +22,18 @@ const Conversation = () => {
     const [transcriptions, setTranscriptions] = useState([]);
     const bufferSize = 1024;
     const chunkSize = 1024; // 청크 크기 설정
+
+    const transcriptionsEndRef = useRef(null);
+
+    const scrollToBottom = () => {
+        if (transcriptionsEndRef.current) {
+            transcriptionsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [transcriptions]);
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
@@ -135,6 +149,7 @@ const Conversation = () => {
                         </div>
                         )
                     ))}
+                    <div ref={transcriptionsEndRef} />
                 </div>
                 <button id="transcript-button" className="play-button" onClick={isRecording ? stopRecording : startRecording}>
                     <img src={isRecording ? stopIcon : startIcon} alt={isRecording ? 'Stop' : 'Start'} />

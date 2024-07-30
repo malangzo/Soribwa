@@ -6,8 +6,9 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
 
+<link rel="manifest" href="/manifest.json" />
+
 const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
-const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
 
 const NoticeContent = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -25,7 +26,7 @@ const NoticeContent = () => {
 
     const fetchNotice = async () => {
         try {
-            const response = await fetch(`${REACT_APP_YUJUNG_FASTAPI}/noticeContent/${notice_no}`);
+            const response = await fetch(`${REACT_APP_FASTAPI}/noticeContent/${notice_no}`);
             if (!response.ok) {
                 if (response.status === 404) {
                     throw new Error('게시글을 찾을 수 없습니다.');

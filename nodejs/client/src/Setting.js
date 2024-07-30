@@ -7,6 +7,8 @@ import Sidebar from './components/Sidebar';
 import userAvatarDefault from './images/userAvatar.png';
 import { Link } from 'react-router-dom';
 
+<link rel="manifest" href="/manifest.json" />
+
 const Setting = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
@@ -30,13 +32,14 @@ const Setting = () => {
   const handleDeleteAccount = async () => {
     if (window.confirm("정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
       const userId = sessionStorage.getItem("id");
+      const role = sessionStorage.getItem("role");
       if (!userId) {
         alert("사용자 ID를 찾을 수 없습니다.");
         return;
       }
   
       try {
-        const response = await fetch(`${process.env.REACT_APP_FASTAPI}/userDelete?id=${encodeURIComponent(userId)}`, {
+        const response = await fetch(`${process.env.REACT_APP_FASTAPI}/userDelete?id=${encodeURIComponent(userId)}&role=${encodeURIComponent(role)}`, {
           method: 'DELETE',
         });
   
@@ -69,9 +72,7 @@ const Setting = () => {
               <button className='button'>회원 정보 수정</button>
             </Link>
             <button className='button'>마이크 볼륨 조절</button>
-            <Link to="/Graph">
-              <button className='button'>내 데이터</button>
-            </Link>
+
             &nbsp;&nbsp;&nbsp;
             <p>User</p>
             <Link to="#" onClick={handleLogout}>

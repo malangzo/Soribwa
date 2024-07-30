@@ -1,5 +1,7 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 
+<link rel="manifest" href="/manifest.json" />
+
 const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
 
 const KakaoMap = forwardRef((props, ref) => {
@@ -111,47 +113,91 @@ const KakaoMap = forwardRef((props, ref) => {
             car_horn: 'https://github.com/malangzo/images/blob/3fcc31f09c9f0ac353744f3d62d21167f6cbccb7/car_horn.png?raw=true',
           };
 
-          const handleMarkerData = () => {
+          // 라벨명 딕셔너리
+          const Labels = {
+            dog_bark: '개 짖는 소음',
+            jackhammer: '착암기 소음',
+            drilling: '드릴 소음',
+            car_horn: '차 경적 소음',
+          };
 
-            // 마커 생성 및 표시
-            markerData.forEach((data) => {
-              const imageUrl = Images[data.label]; // 해당 라벨에 맞는 이미지 URL 가져오기
-              const imageSize = new kakao.maps.Size(30, 40); // 마커이미지의 크기
+          const handleMarkerData = () => {
+            // 위치별로 데이터 그룹화
+            const groupedData = markerData.reduce((acc, data) => {
+              const key = `${data.location.lat},${data.location.lon}`;
+              if (!acc[key]) {
+                acc[key] = [];
+              }
+              acc[key].push(data);
+              return acc;
+            }, {});
+
+            Object.keys(groupedData).forEach((key) => {
+              const group = groupedData[key];
+              const centerLat = group[0].location.lat;
+              const centerLon = group[0].location.lon;
+              const locPosition = new kakao.maps.LatLng(centerLat, centerLon);
+
+              // 라벨별로 가장 큰 데시벨 값 찾기
+              const maxDecibelPerLabel = group.reduce((acc, data) => {
+                if (!acc[data.label] || data.decibel > acc[data.label]) {
+                  acc[data.label] = data.decibel;
+                }
+                return acc;
+              }, {});
+
+              // 전체 중 가장 큰 데시벨 값을 가진 데이터 찾기
+              const maxDecibelData = Object.keys(maxDecibelPerLabel).reduce((max, label) => 
+                maxDecibelPerLabel[label] > max.decibel ? {label, decibel: maxDecibelPerLabel[label]} : max,
+                {label: '', decibel: -Infinity}
+              );
+              
+              const newlabel = Labels[maxDecibelData.label] || maxDecibelData.label;
+              const imageUrl = Images[maxDecibelData.label];
+              const imageSize = new kakao.maps.Size(30, 40);
 
               const markerImage = new kakao.maps.MarkerImage(imageUrl, imageSize);
 
               const marker = new kakao.maps.Marker({
-                position: new kakao.maps.LatLng(data.location.lat, data.location.lon),
-                image: markerImage, // 마커에 이미지 적용
+                position: locPosition,
+                image: markerImage,
               });
               marker.setMap(map);
 
-              // 인포윈도우 생성 (옵션)
+              const infowindowContent = `
+                <div style="padding:15px;">
+                  <strong>현 지점 소음의 최대 데시벨</strong><br></p>
+                  ${Object.entries(maxDecibelPerLabel)
+                    .sort(([,a], [,b]) => b - a)  // 데시벨 값으로 내림차순 정렬
+                    .map(([label, decibel]) => `${Labels[label] || label}: ${decibel} dB`)
+                    .join('<br>')}
+                </div>
+              `;
+
               const infowindow = new kakao.maps.InfoWindow({
-                content: `<div style="padding:5px;">${data.label}<br>Decibel: ${data.decibel}</div>`,
+                content: infowindowContent,
                 removable: true,
               });
 
-              // 마커 클릭 시 인포윈도우 표시
               kakao.maps.event.addListener(marker, 'click', function () {
                 infowindow.open(map, marker);
               });
 
               // Decibel에 따라 원의 색상 및 반경 설정
               let circleOptions;
-              if (data.decibel >= 100) {
+              if (maxDecibelData.decibel >= 100) {
                 circleOptions = {
                   strokeColor: '#e33f36',
                   fillColor: '#f76860',
                   radius: 50,
                 };
-              } else if (data.decibel >= 80) {
+              } else if (maxDecibelData.decibel >= 80) {
                 circleOptions = {
                   strokeColor: '#f77111',
                   fillColor: '#f79045',
                   radius: 20,
                 };
-              } else if (data.decibel >= 60) {
+              } else if (maxDecibelData.decibel >= 60) {
                 circleOptions = {
                   strokeColor: '#fcdb1e',
                   fillColor: '#f5da40',
@@ -159,10 +205,9 @@ const KakaoMap = forwardRef((props, ref) => {
                 };
               }
 
-              // circleOptions가 설정된 경우에만 원을 생성 및 지도에 표시
               if (circleOptions) {
                 const circle = new kakao.maps.Circle({
-                  center: new kakao.maps.LatLng(data.location.lat, data.location.lon),
+                  center: locPosition,
                   radius: circleOptions.radius,
                   strokeWeight: 0,
                   strokeColor: circleOptions.strokeColor,
@@ -172,6 +217,39 @@ const KakaoMap = forwardRef((props, ref) => {
                   fillOpacity: 0.5,
                 });
                 circle.setMap(map);
+
+                // 애니메이션 적용 - 원 오퍼시티
+                const minOpacity = 0.4; // 최소 오퍼시티
+                const maxOpacity = 0.9; // 최대 오퍼시티
+                const opacityStep = 0.007; // 오퍼시티 변화 속도
+                let currentOpacity = 0.5; // 초기 오퍼시티 값
+                let increasing = false; // 초기 애니메이션 상태 설정 (펼쳐짐)
+
+                const animateCircleOpacity = () => {
+                  if (increasing) {
+                    currentOpacity += opacityStep;
+                    if (currentOpacity >= maxOpacity) {
+                      currentOpacity = maxOpacity;
+                      increasing = false;
+                    }
+                  } else {
+                    currentOpacity -= opacityStep;
+                    if (currentOpacity <= minOpacity) {
+                      currentOpacity = minOpacity;
+                      increasing = true;
+                    }
+                  }
+
+                  // 원의 fillOpacity 업데이트
+                  circle.setOptions({
+                    fillOpacity: currentOpacity,
+                  });
+
+                  // 다음 애니메이션 프레임 요청
+                  requestAnimationFrame(animateCircleOpacity);
+                };
+
+                animateCircleOpacity(); // 애니메이션 시작
               }
             });
           };

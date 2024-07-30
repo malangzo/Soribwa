@@ -58,7 +58,7 @@
     transform: translate(-50%, -50%);
 }
 
-.emotion-happy { color: yellow; }
+.emotion-happy { color: #959802; }
 .emotion-happy::before { content: '😊 '; }
 .emotion-sad { color: blue; }
 .emotion-sad::before { content: '😢 '; }

@@ -8,6 +8,8 @@ import stopIcon from './images/stop.png';
 import soribwa from './images/soribwa.png';
 import { Link, useNavigate } from "react-router-dom";
 
+<link rel="manifest" href="/manifest.json" />
+
 const Cyclesound = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [isRecording, setIsRecording] = useState(false);

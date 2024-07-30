@@ -6,7 +6,9 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import megaphone from '../images/megaphone.png';
 
-const REACT_APP_YUJUNG_FASTAPI = process.env.REACT_APP_YUJUNG_FASTAPI;
+<link rel="manifest" href="/manifest.json" />
+
+const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
 
 const NoticeList = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -14,6 +16,7 @@ const NoticeList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
+    const [pageRange, setPageRange] = useState([1, 5]);
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
@@ -22,7 +25,7 @@ const NoticeList = () => {
     useEffect(() => {
         const fetchNotices = async () => {
             try {
-                const response = await fetch('https://yfastapi.soribwa.com/noticeList');
+                const response = await fetch(`${REACT_APP_FASTAPI}/noticeList`);
                 const data = await response.json();
                 const sortedData = data.reverse()
                 setNotices(sortedData);
@@ -37,6 +40,21 @@ const NoticeList = () => {
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
+        if (pageNumber > pageRange[1]) {
+            setPageRange([pageNumber, pageNumber + 4]);
+        } else if (pageNumber < pageRange[0]) {
+            setPageRange([pageNumber -4, pageNumber]);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        setPageRange([pageRange[0] - 5, pageRange[0] - 1]);
+        setCurrentPage(pageRange[0] - 5);
+    };
+
+    const handleNextPage = () => {
+        setPageRange([pageRange[1] + 1, pageRange[1] + 5]);
+        setCurrentPage(pageRange[1] + 1);
     };
 
     const startIndex = (currentPage - 1) * perPage;
@@ -75,15 +93,23 @@ const NoticeList = () => {
                 ))}
             </div>
             <div className='pagination'>
-                {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-                    <button
-                        key={pageNumber}
-                        onClick={() => handlePageChange(pageNumber)}
-                        disabled={pageNumber === currentPage}
-                    >
-                        {pageNumber}
-                    </button>
-                ))}
+                {pageRange[0] > 1 && (
+                    <button onClick={handlePreviousPage}>{'◀'}</button>
+                )}
+                {Array.from({ length: totalPages }, (_, index) => index + 1)
+                    .slice(pageRange[0] - 1, pageRange[1])
+                    .map((pageNumber) => (
+                        <button
+                            key={pageNumber}
+                            onClick={() => handlePageChange(pageNumber)}
+                            disabled={pageNumber === currentPage}
+                        >
+                            {pageNumber}
+                        </button>
+                    ))}
+                {pageRange[1] < totalPages && (
+                    <button onClick={handleNextPage}>{'▶'}</button>
+                )}
             </div>
         </div>
     </main>

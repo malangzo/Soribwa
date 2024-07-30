@@ -10,6 +10,7 @@ import soribwa from './images/soribwa.png';
 
 import { Link, useNavigate } from "react-router-dom";
 
+
 // import Session from 'react-session-api';
 
 // import Button from '@mui/material/Button';
@@ -43,8 +44,11 @@ const labelImages = {
     'engine_idling': engineIdlingImage,
     'jackhammer': jackhammerImage,
     'gun_shot': gunShotImage,
-    'siren': sirenImage
+    'siren': sirenImage,
+    'silence': ''
 };
+
+<link rel="manifest" href="/manifest.json" />
 
 const Livesound = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -274,7 +278,7 @@ const Livesound = () => {
                 const lbtxt = document.getElementById("label_text");
                 const label_kor = {
                     'dog_bark': '강아지 짖는 소리', 'drilling': '전동 드릴 소리', 'children_playing': '아이들 노는 소리', 'street_music': '음악 소리', 'air_conditioner': '에어컨 소리',
-                    'car_horn': '자동차 경적 소리', 'engine_idling': '엔진 소리', 'jackhammer': '천공기 소리', 'gun_shot': '총 소리', 'siren': '사이렌 소리'
+                    'car_horn': '자동차 경적 소리', 'engine_idling': '엔진 소리', 'jackhammer': '천공기 소리', 'gun_shot': '총 소리', 'siren': '사이렌 소리', 'silence': '입력 대기중'
                 };
 
                 return axios.post(`${REACT_APP_JAEHYUCK_NODEAPI}/audio_test`, formData, {
@@ -297,21 +301,22 @@ const Livesound = () => {
                                 navigator.geolocation.getCurrentPosition(res,req, options)
                             })
                         }
-
-                        async function toDataBase() {
-                            var loca = await getLocation();
-                            console.log('geo: ', loca.coords.latitude, loca.coords.longitude)
-                            dbPost.timemap = loca.coords.latitude.toString() + loca.coords.longitude.toString() + dbPost.timemap;
-                            console.log(dbPost)
-                            const timemapRes = await fetch(`${REACT_APP_FASTAPI}/realtimeInsert`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(dbPost)
-                            })
+                        if (response.data.label != 'slience') {
+                            async function toDataBase() {
+                                var loca = await getLocation();
+                                console.log('geo: ', loca.coords.latitude, loca.coords.longitude)
+                                dbPost.timemap = loca.coords.latitude.toString() + loca.coords.longitude.toString() + dbPost.timemap;
+                                console.log(dbPost)
+                                const timemapRes = await fetch(`${REACT_APP_FASTAPI}/realtimeInsert`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(dbPost)
+                                })
+                            }
+                            toDataBase()
                         }
-                        toDataBase()
                         })
                         
                         // async test() {
@@ -479,6 +484,7 @@ const Livesound = () => {
                             <img src={startIcon} alt="Play" />
                         </button>
                     </div>
+    
                     {/* <div id="cancase">
                         <canvas id="visualizer" width="100px" height="100px" style={{ border: "5px solid blue", borderRadius: "100px" }}></canvas>
                     </div> */}
