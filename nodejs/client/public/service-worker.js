@@ -34,17 +34,15 @@ self.addEventListener("fetch", (event) => {
     }
 });
 
-// 푸시 알림 처리
-self.addEventListener('push', (event) => {
-    console.log('Push event received:', event);
-    const data = event.data.json();
-    const options = {
-        body: data.message.body,
-        icon: 'logo192.png',
-        // 기타 옵션을 추가할 수 있습니다.
-    };
+// self.addEventListener('push', (event) => {
+//     console.log('Push event received:', event);
+//     const data = event.data.json();
+//     const options = {
+//         body: data.message.body,
+//         icon: 'logo192.png',
+//     };
 
-    event.waitUntil(
-        self.registration.showNotification(data.message.title, options)
-    );
-});
+//     event.waitUntil(
+//         self.registration.showNotification(data.message.title, options)
+//     );
+// });

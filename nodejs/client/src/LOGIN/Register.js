@@ -71,7 +71,7 @@ const Register = () => {
 
     async function register(e) {
         e.preventDefault();
-        if (passwordValue == passwordcheckValue) {
+        if (passwordValue == passwordcheckValue && emailAuthCode == inputAuthCode && emailsend == true) {
             try {
                 var data = { "email": emailValue, "name": nameValue, "password": passwordValue }
                 const response = await fetch(REGISTER_URL, {
@@ -101,14 +101,19 @@ const Register = () => {
             } catch (error) {
                 console.error("실패: ", error);
             }
-        } else {
+        }  else if (emailAuthCode != inputAuthCode || emailsend != true) {
+            noti(['code'])
+            Swal.fire({icon:'error', title:'', text:'인증코드가 틀렸습니다.', confirmButtonText:'확인'})
+        } else if (passwordValue != passwordcheckValue) {
             // const password = document.getElementById("password")
             // const passwordcheck = document.getElementById("passwordcheck")
             // password.style.borderColor= 'red';
             // passwordcheck.style.borderColor= 'red';
             noti(['password', 'passwordcheck'])
             Swal.fire({icon:'error', title:'', text:'비밀번호가 일치하지 않습니다.', confirmButtonText:'확인'})
-        }  
+        } else {
+            Swal.fire({icon:'error', title:'', text:'잘못된 형식입니다.', confirmButtonText:'확인'})
+        }
     };
 
 
@@ -145,8 +150,8 @@ const Register = () => {
             <div className="main-logo"><img src={soribwa_yellow} alt="Soribwa" className="soribwa-main-logo" /></div>
             <div className="login-main">
                 <div className="input_case">
-                    <input id="email" type="text" placeholder="EMAIL" onChange={userEmail}/><button onClick={emailAuth}>인증번호 전송</button><p/>
-                    <input id="code" type="text" placeholder="INPUT CODE" onChange={userAuthCode}/><p/>
+                    <input id="email" type="text" placeholder="EMAIL" onChange={userEmail}/><p/>
+                    <input id="code" type="text" placeholder="INPUT CODE" onChange={userAuthCode}/><button id="authbtn" onClick={emailAuth}>인증번호 전송</button><p/>
                     <input id="name" type="text" placeholder="NAME" onChange={userName}/><p/>
                     <div style={{ position: "relative" }}>
                         <input id="password" type={showPassword ? "text" : "password"} placeholder="PASSWORD" onChange={userPassword} />

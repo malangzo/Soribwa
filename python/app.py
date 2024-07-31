@@ -18,7 +18,7 @@ from pydub import AudioSegment
 from io import DEFAULT_BUFFER_SIZE
 from starlette.requests import Request
 from database import db_conn
-from models import CycleData, Realtime_log, User_info, Notice_board
+from models import CycleData, Realtime_log, User_info, Notice_board, Push_alert
 from dotenv import load_dotenv
 import csv
 from io import BytesIO, StringIO
@@ -54,28 +54,6 @@ app = FastAPI()
 
 db = db_conn()
 session = db.sessionmaker()
-
-# 서비스 계정 JSON 파일 경로
-SERVICE_ACCOUNT_FILE = 'src/soundproject-26e1d-firebase-adminsdk-ntoea-046129bd6b.json'
-
-def get_access_token():
-    credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE,
-        scopes=['https://www.googleapis.com/auth/cloud-platform']
-    )
-    credentials.refresh(GoogleAuthRequest())
-    return credentials.token
-
-class Token(BaseModel):
-    token: str
-
-# 디바이스 토큰을 저장할 데이터베이스
-device_tokens = []
-
-@app.post("/saveToken")
-async def save_token(token: Token):
-    device_tokens.append(token.token) 
-    return {"status": "Token saved"}
 
 
 def extract_feature(file_name):
@@ -356,34 +334,6 @@ async def save_notice_data(notice: NoticeCreate):
     session.add(insert)
     session.commit()
     session.refresh(insert)
-    result = {"notice_no": insert.no}
-    payload = {
-        "message": {
-            "notification": {
-                "title": "New Notice",
-                "body": f"New notice added: {notice.title}"
-            },
-            "topic": "all" 
-        }
-    }
-    
-    # 액세스 토큰 가져오기
-    access_token = get_access_token()
-    print(access_token)
-    
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'Content-Type': 'application/json'
-    }
-
-    try:
-        response = requests.post(FCM_API_URL, json=payload, headers=headers)
-        response.raise_for_status()
-
-    except requests.exceptions.HTTPError as err:
-        print(f"FCM API request failed: {err}")
-        raise HTTPException(status_code=500, detail="Failed to send push notification")
-
     result = {"notice_no": insert.no}
     return result
 
@@ -769,31 +719,140 @@ async def predict_emotion(file: UploadFile = File(...), text: str = Form(...)):
     
 
 
+########################################################################
 
 
-def send_push_notification(fcm_token, token):
-    url = 'https://fcm.googleapis.com/v1/projects/soundproject-26e1d/messages:send'
-    headers = {
-        'Authorization': f'Bearer {fcm_token}',
-        'Content-Type': 'application/json',
-    }
-    payload = {
-        "message": {
-            "notification": {
-                "title": "New Notice",
-                "body": "New notice added"
-            },
-            "token": token
-        }
-    }
+# def send_push_notification(access_token, token):
+#     url = 'https://fcm.googleapis.com/v1/projects/soundproject-26e1d/messages:send'
+#     headers = {
+#         'Authorization': f'Bearer {access_token}',
+#         'Content-Type': 'application/json',
+#     }
+#     payload = {
+#         "message": {
+#             "notification": {
+#                 "title": "Test중",
+#                 "body": "Test"
+#             },
+#             "token": token
+#         }
+#     }
 
-    response = requests.post(url, headers=headers, data=json.dumps(payload))
-    print("Response:", response.json())  # 응답을 로그로 확인합니
+#     response = requests.post(url, headers=headers, data=json.dumps(payload))
+#     print("Response:", response.json())  # 응답을 로그로 확인합니
 
-# 예시 토큰
-fcm_token = get_access_token()
-token = "dH_fM1x6mXv6rvPEnIDs4C:APA91bHefz8Dmg4671QmlGgVqx6QddwAXt9ZTtzlncumuB8I_aV8gjNja5PVbK-jqXTb7CqtUz9TzT_aw_0vHOwYgvDt8ssjyEwbseyeQSqBuaX4FM1U16eNvSk8ts3Nen4RX2cP2zVz"
-
-send_push_notification(fcm_token, token)
+# # 예시 토큰
+# access_token = get_access_token()
+# token = "e-jg0Ky5C5FOFXKZcDcQgk:APA91bH0Pnz3VoV6x_HNk62V59A2ZAsieA5B3_724QJfymrmWyHI7L9829A_ibYH5g0fGRFNtP53kbEpmzbAgd3TtqJeWMBG5zC-_oXKK9WVei9lxMVAR-4_C88lJ2W6s-J1nbm6Hdrv"
+# #token = "dH_fM1x6mXv6rvPEnIDs4C:APA91bHefz8Dmg4671QmlGgVqx6QddwAXt9ZTtzlncumuB8I_aV8gjNja5PVbK-jqXTb7CqtUz9TzT_aw_0vHOwYgvDt8ssjyEwbseyeQSqBuaX4FM1U16eNvSk8ts3Nen4RX2cP2zVz"
+# send_push_notification(access_token, token)
     
 
+# 서비스 계정 JSON 파일 경로
+SERVICE_ACCOUNT_FILE = 'src/soundproject-26e1d-firebase-adminsdk-ntoea-046129bd6b.json'
+
+def get_access_token():
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE,
+        scopes=['https://www.googleapis.com/auth/cloud-platform']
+    )
+    credentials.refresh(GoogleAuthRequest())
+    return credentials.token
+
+class Token(BaseModel):
+    token: str
+
+@app.post("/saveToken")
+async def save_token(token: Token):
+    token = token.token
+    
+class TokenInsert(BaseModel):
+    uuid: str
+    fcmToken: str
+    permission: str = "yes" 
+
+@app.post("/insertToken")
+async def insert_token(tokenInsert: TokenInsert):
+    device_tokens = tokenInsert.fcmToken
+    if not device_tokens:
+        raise HTTPException(status_code=400, detail="No tokens available")
+
+    token = device_tokens
+    print(tokenInsert.uuid)
+    
+    # 사용자 UUID로 기존 데이터를 조회
+    existing_entry = session.query(Push_alert).filter(Push_alert.uuid == tokenInsert.uuid).first()
+    existing_token = session.query(Push_alert).filter(Push_alert.token == token).first()
+
+    if existing_entry:
+        if existing_token:
+            return {"message": "User already exists with the same token", "data": existing_token}
+        if existing_entry.token != token:
+            new_entry = Push_alert(uuid=tokenInsert.uuid, token=token, permission=tokenInsert.permission)
+            session.add(new_entry)
+            session.commit()
+            session.refresh(new_entry)
+            return {"message": "New user created and token inserted successfully", "data": new_entry}
+        return {"message": "User already exists with the same token", "data": existing_entry}
+    else:
+        if existing_token: 
+            return {"message": "User already exists with the same token", "data": existing_token}
+        new_entry = Push_alert(uuid=tokenInsert.uuid, token=token, permission=tokenInsert.permission)
+        session.add(new_entry)
+        session.commit()
+        session.refresh(new_entry)
+        return {"message": "New user created and token inserted successfully", "data": new_entry}
+
+
+class PushNotification(BaseModel):
+    tokens: list[str]
+    title: str
+    body: str
+
+@app.post("/sendPushNotification")
+async def send_push_notification(notification: PushNotification):
+    access_token = get_access_token()
+    
+    url = 'https://fcm.googleapis.com/v1/projects/soundproject-26e1d/messages:send'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json',
+    }
+
+    failed_tokens = []
+    
+    tokens = session.query(Push_alert.token).all()
+    
+    if not tokens:
+        raise HTTPException(status_code=404, detail="No tokens found in the database")
+
+    tokens = [token[0] for token in tokens]
+    
+    #tokens = ["dH_fM1x6mXv6rvPEnIDs4C:APA91bHefz8Dmg4671QmlGgVqx6QddwAXt9ZTtzlncumuB8I_aV8gjNja5PVbK-jqXTb7CqtUz9TzT_aw_0vHOwYgvDt8ssjyEwbseyeQSqBuaX4FM1U16eNvSk8ts3Nen4RX2cP2zVz", "e-jg0Ky5C5FOFXKZcDcQgk:APA91bH0Pnz3VoV6x_HNk62V59A2ZAsieA5B3_724QJfymrmWyHI7L9829A_ibYH5g0fGRFNtP53kbEpmzbAgd3TtqJeWMBG5zC-_oXKK9WVei9lxMVAR-4_C88lJ2W6s-J1nbm6Hdrv"]
+    for token in tokens:
+        print(token)
+        message = {
+            "message": {
+                "token": token,
+                "notification": {
+                    "title": notification.title,
+                    "body": notification.body
+                }
+            }
+        }
+
+        response = requests.post(url, headers=headers, json=message)
+        
+        try:
+            response_data = response.json()
+            print("response_data:", response_data)
+        except ValueError as e:
+            raise HTTPException(status_code=response.status_code, detail=f"Invalid JSON response: {response.text}")
+        
+        if response.status_code != 200:
+            failed_tokens.append(token)
+    
+    if failed_tokens:
+        raise HTTPException(status_code=400, detail=f"Failed to send notification to tokens: {failed_tokens}")
+    
+    return {"message": "Push notifications sent successfully"}

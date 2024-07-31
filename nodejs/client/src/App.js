@@ -3,6 +3,7 @@ import './App.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
+import Backspace from './components/Backspace';
 import { Link } from "react-router-dom";
 import axios from 'axios';
 
@@ -18,6 +19,7 @@ const REACT_APP_FASTAPI = process.env.REACT_APP_FASTAPI;
 const App = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [noticeTitle, setNoticeTitle] = useState('');
+  // const [isLogin, setIsLogin] = useState(localStorage.getItem('token') ? true : false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
@@ -38,6 +40,7 @@ const App = () => {
   
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+      <Backspace />
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>

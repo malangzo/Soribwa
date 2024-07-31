@@ -7,6 +7,7 @@ import startIcon from './images/start.png';
 import stopIcon from './images/stop.png';
 import soribwa from './images/soribwa.png';
 import { Link, useNavigate } from "react-router-dom";
+import Backspace from './components/Backspace';
 
 <link rel="manifest" href="/manifest.json" />
 
@@ -159,6 +160,7 @@ const Cyclesound = () => {
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+            <Backspace />
             <header className="header custom-header">
                 <div className="header-content">
                     <button className="menu-button" onClick={toggleSidebar}>

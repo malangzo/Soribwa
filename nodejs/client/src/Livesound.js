@@ -3,10 +3,10 @@ import axios from "axios";
 import './Cycle.css';
 import Sidebar from './components/Sidebar';
 import sidebarIcon from './images/main_left.png';
-import backIcon from './images/back.png';
 import startIcon from './images/start.png';
 import stopIcon from './images/stop.png';
 import soribwa from './images/soribwa.png';
+import Backspace from './components/Backspace';
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -442,6 +442,7 @@ const Livesound = () => {
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+            <Backspace />
             <header className="header custom-header">
                 <div className="header-content">
                     <button className="menu-button" onClick={toggleSidebar}>
@@ -451,11 +452,6 @@ const Livesound = () => {
                         <img src={soribwa} alt="soribwa" />
                     </div>
                 </div>
-                <Link to="/App" className="back-link">
-                    <button className="back-button">
-                        <img src={backIcon} alt="Back" />
-                    </button>
-                </Link>
                 <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
             </header>
 

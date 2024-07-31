@@ -36,7 +36,7 @@
     background-color: #0532A9;
 }
 
-#email, #name, #password, #passwordcheck, #code {
+#email, #name, #password, #passwordcheck {
     height: 40px;
     width: 250px;
     border-radius: 8px;
@@ -46,6 +46,31 @@
     background-color: #0532A9;
     color: #FFFFFF;
     margin-bottom: 10px; 
+}
+
+#code {
+    height: 40px;
+    width: 140px;
+    border-radius: 8px;
+    border-style: groove;
+    border-width: 1px;
+    border-color: #FFFFFF;
+    background-color: #0532A9;
+    color: #FFFFFF;
+    margin: 0px 10px 10px 0px;
+}
+
+#authbtn {
+    height: 44px;
+    width: 100px;
+    border-radius: 8px;
+    border-style: none;
+    border-width: 1px;
+    border-color: #FFFFFF;
+    background-color: #FEC6C7;
+    color: #000000;
+    font-weight: 800;
+    font-size: 14px
 }
 
 #email::placeholder, #password::placeholder, #name::placeholder, #passwordcheck::placeholder, #code::placeholder {
@@ -85,6 +110,17 @@
     height: 44px;
     padding: 10px 30px;
 }
+
+/* .btn_case #authbtn {
+    font-family: 'Toss Product Sans';
+    font-weight: bold;
+    font-size: 16px;
+    border: 0;
+    border-radius: 8px;
+    height: 44px;
+    padding: 0px 24px 0px;
+    margin: -5px 0px 20px;
+} */
 
 button #register {
     padding: 10px 60px 40px 60px;

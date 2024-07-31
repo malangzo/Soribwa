@@ -39,5 +39,12 @@ class Notice_board(Base):
     date = Column(DateTime, default=datetime.now())
     file = Column(Text)
     
+class Push_alert(Base):
+    __tablename__ = 'push_alert'
+    
+    uuid = Column(String(36), nullable=False)
+    token = Column(String(255), nullable=False, primary_key=True)
+    permission = Column(String(5), nullable=False)
+    
     
     

@@ -9,6 +9,7 @@ import soribwa_yellow from '../images/soribwa_yellow.png';
 import show from '../images/eyes.png';
 import hidden from '../images/hidden.png';
 import Swal from "sweetalert2";
+import LoginInfo from "../LoginInfo.js";
 
 <link rel="manifest" href="/manifest.json" />;
 
@@ -33,8 +34,9 @@ const Login = () => {
     const toggleShowPassword = () => setShowPassword(!showPassword);
 
     async function login() {
-        if (emailValue == '' && passwordValue == ''){Swal.fire({icon:'error', title:'',text:'이메일과 비밀번호를 입력해주세요.',confirmButtonText:'확인'})}
-        else{
+        if (emailValue == '' && passwordValue == ''){
+            Swal.fire({icon:'error', title:'',text:'이메일과 비밀번호를 입력해주세요.',confirmButtonText:'확인'})
+        } else{
         try {
             var data = { "email": emailValue, "password": passwordValue };
             const response = await fetch(LOGIN_URL, {
@@ -42,6 +44,7 @@ const Login = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify(data)
             });
 
@@ -49,15 +52,42 @@ const Login = () => {
 
             if (result.status) {
                 if (result.status == 200) {
-                        sessionStorage.setItem("id", result.data.email);
-                        sessionStorage.setItem("name", result.data.name);
-                        sessionStorage.setItem("img", result.data.user_avatar);
-                        sessionStorage.setItem("role", result.data.role);
-                        navigate("/App")
-                    }
-                    else{
-                        Swal.fire({icon:'error', title:'',text:result.message,confirmButtonText:'확인'});
-                    }
+                    sessionStorage.setItem("accessToken", result.data.accessToken);
+                    sessionStorage.setItem("id", result.data.email);
+                    sessionStorage.setItem("name", result.data.name);
+                    sessionStorage.setItem("img", result.data.user_avatar);
+                    sessionStorage.setItem("role", result.data.role);
+
+                    const insertToken = async (uuid, fcmToken) => {
+                        try {
+                            const response = await fetch(`${process.env.REACT_APP_FASTAPI}/insertToken`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({ uuid: uuid, fcmToken: fcmToken, permission: "yes" })
+                            });
+                    
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                    
+                            const result = await response.json();
+                            console.log("Token inserted successfully:", result);
+                        } catch (error) {
+                            console.error("Failed to insert token:", error);
+                        }
+                    };
+                    console.log('App route check')
+
+                    const fcmToken = sessionStorage.getItem('fcmToken');
+                    await insertToken(result.data.uuid, fcmToken);
+
+                    navigate("/App");
+                }
+                else{
+                    Swal.fire({icon:'error', title:'',text:result.message,confirmButtonText:'확인'});
+                }
                 }
         } catch (error) {
             console.error(error)
@@ -71,6 +101,7 @@ const Login = () => {
 
     return (
         <div className="fullscreen-container">
+            <LoginInfo />
             <div className="main-logo"><img src={soribwa_yellow} alt="Soribwa" className="soribwa-main-logo" /></div>
                 <div className="login-main">
                     <div className="input_case">

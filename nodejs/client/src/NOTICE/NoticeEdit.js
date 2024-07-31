@@ -4,6 +4,7 @@ import Editor from '../components/Editor';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
+import Backspace from '../components/Backspace';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 
 <link rel="manifest" href="/manifest.json" />
@@ -141,6 +142,7 @@ const NoticeEdit = () => {
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+            <Backspace />
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
         <main style= {{ padding: '0px' }}>

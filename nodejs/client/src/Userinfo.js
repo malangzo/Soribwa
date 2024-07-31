@@ -3,6 +3,7 @@ import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
+import Backspace from './components/Backspace';
 import userAvatarDefault from './images/userAvatar.png';
 
 <link rel="manifest" href="/manifest.json" />
@@ -16,7 +17,10 @@ const UserInfo = () => {
         setSidebarOpen(!isSidebarOpen);
     };
 
-    const [userAvatar, setUserAvatar] = useState(sessionStorage.getItem("img") ? sessionStorage.getItem("img"):userAvatarDefault);
+    const [userAvatar, setUserAvatar] = useState(() => {
+        const storedAvatar = sessionStorage.getItem("img");
+        return storedAvatar !== null ? storedAvatar : userAvatarDefault;
+      });
     const [userName, setUserName] = useState(sessionStorage.getItem("name") ? sessionStorage.getItem("name"):"Undefined");
     const [newUserName, setNewUserName] = useState("");
     const [isEditingName, setIsEditingName] = useState(false);
@@ -124,12 +128,16 @@ const UserInfo = () => {
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+            <Backspace />
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
             
             <main>
                 <div className="user-info">
-                    <img src={userAvatar} alt="UserAvatar" className='avatar' />
+                    <img src={userAvatar} alt="UserAvatar" className='avatar'
+                    onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = userAvatarDefault;}} />
                     <div className="info-text">
                         <p><strong>NICKNAME : </strong>{userName}</p>
                     </div>

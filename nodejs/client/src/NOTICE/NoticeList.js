@@ -4,6 +4,7 @@ import './Notice.css';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Backspace from '../components/Backspace';
 import megaphone from '../images/megaphone.png';
 
 <link rel="manifest" href="/manifest.json" />
@@ -17,6 +18,7 @@ const NoticeList = () => {
     const [perPage] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
     const [pageRange, setPageRange] = useState([1, 5]);
+    const isAdmin = sessionStorage.getItem("role") === "admin";
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
@@ -64,13 +66,16 @@ const NoticeList = () => {
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+            <Backspace />
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
         <main style={{  display: 'block', alignItems: 'initial' }}>
             <div className='notice-container'>
                 <div className="notice-header">
                     <Link to = "/NoticeList" as="div" className='header-title'>Notice</Link>
-                    <Link to = "/NoticeWrite" as="div" className="add-icon">+</Link>
+                    {isAdmin && (
+                        <Link to = "/NoticeWrite" as="div" className="add-icon">+</Link>
+                    )}
                 </div>
                 <div className="list">
                     {latestNotice && (

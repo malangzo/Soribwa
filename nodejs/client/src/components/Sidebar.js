@@ -4,7 +4,6 @@ import back_whiteIcon from '../images/back_white.png';
 import conversation_sidebarIcon from '../images/conversation_sidebar.png';
 import livesound_sidebarIcon from '../images/livesound_sidebar.png';
 import setting_sidebarIcon from '../images/setting_sidebar.png';
-import data_sidebarIcon from '../images/data_sidebar.png';
 import map_sidebarIcon from '../images/map_sidebar.png';
 import userAvatarDefault from '../images/userAvatar.png'; 
 import logout_sidebarIcon from '../images/logout_sidebar.png';
@@ -33,7 +32,10 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <img src={back_whiteIcon} alt="Menu" />
                 </button>
                 <div className="user-info">
-                    <img src={userAvatar} alt="UserAvatar" />
+                    <img src={userAvatar} alt="UserAvatar"
+                    onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = userAvatarDefault;}} />
                     <p>{userName} 님,<br />안녕하세요!</p>
                 </div>
             </div>

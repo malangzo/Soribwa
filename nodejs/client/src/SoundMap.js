@@ -3,6 +3,7 @@ import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
+import Backspace from './components/Backspace';
 import KakaoMap from './Kakaomap';
 import MapInfo from './MapInfo';
 import Filter from './Filter';
@@ -26,6 +27,7 @@ const SoundMap = () => {
 
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+      <Backspace />
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>

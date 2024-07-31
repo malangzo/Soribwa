@@ -5,6 +5,7 @@ import './Conversation.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
+import Backspace from './components/Backspace';
 import ConvInfo from './ConvInfo';
 import startIcon from './images/start.png';
 import stopIcon from './images/stop.png';
@@ -133,6 +134,7 @@ const Conversation = () => {
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+            <Backspace />
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
             <main>

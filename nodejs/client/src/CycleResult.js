@@ -5,6 +5,7 @@ import './Cycle.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
+import Backspace from './components/Backspace';
 import axios from 'axios';
 
 <link rel="manifest" href="/manifest.json" />
@@ -46,6 +47,7 @@ const CycleResult = () => {
 
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+      <Backspace />
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>

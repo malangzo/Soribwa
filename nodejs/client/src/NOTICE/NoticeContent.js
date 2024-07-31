@@ -5,6 +5,7 @@ import './Notice.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
+import Backspace from '../components/Backspace';
 
 <link rel="manifest" href="/manifest.json" />
 
@@ -14,6 +15,7 @@ const NoticeContent = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const { notice_no } = useParams();
     const [notice, setNotice] = useState({});
+    const isAdmin = sessionStorage.getItem("role") === "admin";
     const navigate = useNavigate();
 
     const toggleSidebar = () => {
@@ -69,13 +71,16 @@ const NoticeContent = () => {
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+            <Backspace />
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
         <main style={{  display: 'block', alignItems: 'initial' }}>
             <div className='notice-container'>
                 <div className="notice-header">
                     <Link to = "/NoticeList" as="div" className='header-title'>Notice</Link>
-                    <Link to = "/NoticeWrite" as="div" className="add-icon">+</Link>
+                    {isAdmin && (
+                      <Link to = "/NoticeWrite" as="div" className="add-icon">+</Link>  
+                    )}
                 </div>
                 <div className="notice-content">
                     <div className='notice-top'>
@@ -89,10 +94,12 @@ const NoticeContent = () => {
                         <img src={`data:image/jpeg;base64,${notice.file}`} alt="게시글 이미지" style={{maxWidth: '100%', height: 'auto'}} />
                     )}
                     </div>
-                    <div className='notice-bottom'>
-                        <button className='button' onClick={onClickUpdateNotice}>수정</button>
-                        <button className='button' onClick={onClickDeleteNotice}>삭제</button>
-                    </div>
+                    {isAdmin && (
+                        <div className='notice-bottom'>
+                            <button className='button' onClick={onClickUpdateNotice}>수정</button>
+                            <button className='button' onClick={onClickDeleteNotice}>삭제</button>
+                        </div>
+                    )}
                 </div>
             </div>
         </main>

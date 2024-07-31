@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Backspace from '../components/Backspace';
 
 <link rel="manifest" href="/manifest.json" />
 
@@ -120,6 +121,7 @@ const NoticeWrite = () => {
 
     return (
         <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+            <Backspace />
             <Header toggleSidebar={toggleSidebar} />
             <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
         <main style= {{ padding: '0px' }}>

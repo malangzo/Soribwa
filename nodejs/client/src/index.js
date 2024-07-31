@@ -48,6 +48,7 @@ const askForNotificationPermission = async () => {
     const token = await getToken(messaging, { vapidKey: VAPIDKEY });
     if (token) {
       console.log('FCM Token:', token);
+      sessionStorage.setItem('fcmToken', token);
       // 토큰을 서버로 전송
       await fetch(`${REACT_APP_FASTAPI}/saveToken`, {
         method: 'POST',
@@ -83,6 +84,7 @@ const subscribeUserToPush = async () => {
   });
 };
 
+
 // VAPID 공개키를 Uint8Array로 변환하는 함수
 function urlB64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -96,11 +98,41 @@ function urlB64ToUint8Array(base64String) {
   return outputArray;
 }
 
-// FCM 수신 대기
 onMessage(messaging, (payload) => {
-  console.log('Message received. ', payload);
-  // 푸쉬 알림을 UI에 표시하는 로직을 여기에 추가합니다.
+  console.log('Received message ', payload);
+
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.showNotification(payload.notification.title, {
+        body: payload.notification.body,
+        icon: '/logo192.png'
+      });
+    });
+  } else {
+    console.log('Service Worker is not available.');
+  }
 });
+
+function tokenCheck() {
+    const accessToken = sessionStorage.getItem('accessToken');
+    const userToken = {'accessToken':accessToken};
+    console.log('jwt: ', document.cookie.indexOf('jwt=').onload)
+    if (userToken?.accessToken) {
+        fetch('https://jnodejs.soribwa.com/refresh', {
+            method: 'GET',
+            header: {
+                "Content-Type": "application/json",
+                //Authorization: `Bearer ${document.cookie.indexOf('jwt=')}`,
+                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+            },
+        }).then((res) => {
+            console.log('ref res', res)
+        })
+    }
+    return userToken?.accessToken
+}
+
+const token = tokenCheck();
 
 askForNotificationPermission();
 
@@ -110,6 +142,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     onScriptLoadSuccess={() => console.log("")}>
     <BrowserRouter>
       <Routes>
+        {/* <Route path='/App' element={token ? <App /> : <Login/>} /> */}
         <Route path='/App' element={<App />} />
         <Route path='/Cyclesound' element={<Cyclesound />} />
         <Route path='/CycleResult' element={<CycleResult />} />
@@ -119,7 +152,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path='/Setting' element={<Setting />} />
         <Route path='/Userinfo' element={<Userinfo />} />
         <Route path='/Conversation' element={<Conversation />} />
-        <Route path='/' element={<Login />} />
+        <Route path='/' element={token ? <App/> : <Login/>} />
         <Route path='/Register' element={<Register />} />
         <Route path='/NoticeList' element={<NoticeList />} />
         <Route path='/NoticeWrite' element={<NoticeWrite />} />

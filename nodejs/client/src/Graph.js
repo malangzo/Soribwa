@@ -4,6 +4,7 @@ import './Cycle.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
+import Backspace from './components/Backspace';
 import axios from 'axios';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; 
@@ -77,6 +78,7 @@ const Graph = () => {
 
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+      <Backspace />
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
       <main>

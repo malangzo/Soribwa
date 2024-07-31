@@ -4,6 +4,7 @@ import './Cycle.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
+import Backspace from './components/Backspace';
 import userAvatarDefault from './images/userAvatar.png';
 import { Link } from 'react-router-dom';
 
@@ -25,7 +26,12 @@ const Setting = () => {
   }, [userAvatar, userName]);
 
   const handleLogout = () => {
-    sessionStorage.clear();
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('name');
+    sessionStorage.removeItem('img');
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('id');
+    sessionStorage.removeItem('uuid');
     window.location.href = '/';
   };
 
@@ -60,6 +66,7 @@ const Setting = () => {
 
   return (
     <div className={`container ${isSidebarOpen ? 'blur' : ''}`}>
+      <Backspace />
       <Header toggleSidebar={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
@@ -72,6 +79,7 @@ const Setting = () => {
               <button className='button'>회원 정보 수정</button>
             </Link>
             <button className='button'>마이크 볼륨 조절</button>
+            <button className='button'>푸시 알림 설정</button>
 
             &nbsp;&nbsp;&nbsp;
             <p>User</p>

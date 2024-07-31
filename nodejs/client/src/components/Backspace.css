@@ -1,0 +1,18 @@
+.backspace {
+    position: fixed;
+    left: 15px;
+    bottom: 70px;
+    z-index: 1000;
+    background-color: white; opacity: 0.9;
+    border-radius: 40%;
+    border: none;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+}
+
+.backspace img {
+    width: 17px;
+    height: 18px;
+    display: block;
+}
