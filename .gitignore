@@ -22,3 +22,4 @@ python/secret.json
 */**/**/package-lock.json
 
 python/src/soundproject-26e1d-firebase-adminsdk-ntoea-046129bd6b.json
+python/.env

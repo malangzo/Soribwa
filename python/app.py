@@ -335,7 +335,51 @@ async def save_notice_data(notice: NoticeCreate):
     session.commit()
     session.refresh(insert)
     result = {"notice_no": insert.no}
+    
+    access_token = get_access_token()
+    
+    url = FCM_API_URL
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json',
+    }
+
+    failed_tokens = []
+    
+    tokens = session.query(Push_alert.token).filter(Push_alert.permission == 'yes').all()
+    
+    if not tokens:
+        raise HTTPException(status_code=404, detail="No tokens found in the database")
+
+    tokens = [token[0] for token in tokens]
+    
+    for token in tokens:
+        message = {
+            "message": {
+                "token": token,
+                "notification": {
+                    "title": "공지사항 업데이트",
+                    "body": "새로운 공지사항이 업로드 되었습니다!"
+                }
+            }
+        }
+
+        response = requests.post(url, headers=headers, json=message)
+        
+        try:
+            response_data = response.json()
+            print("response_data:", response_data)
+        except ValueError as e:
+            raise HTTPException(status_code=response.status_code, detail=f"Invalid JSON response: {response.text}")
+        
+        if response.status_code != 200:
+            failed_tokens.append(token)
+    
+    if failed_tokens:
+        raise HTTPException(status_code=400, detail=f"Failed to send notification to tokens: {failed_tokens}")
+    
     return result
+
 
 @app.put("/noticeUpdate/{notice_no}")
 async def update_notice_data(notice_no: int, notice: NoticeUpdate):
@@ -720,32 +764,6 @@ async def predict_emotion(file: UploadFile = File(...), text: str = Form(...)):
 
 
 ########################################################################
-
-
-# def send_push_notification(access_token, token):
-#     url = 'https://fcm.googleapis.com/v1/projects/soundproject-26e1d/messages:send'
-#     headers = {
-#         'Authorization': f'Bearer {access_token}',
-#         'Content-Type': 'application/json',
-#     }
-#     payload = {
-#         "message": {
-#             "notification": {
-#                 "title": "Test중",
-#                 "body": "Test"
-#             },
-#             "token": token
-#         }
-#     }
-
-#     response = requests.post(url, headers=headers, data=json.dumps(payload))
-#     print("Response:", response.json())  # 응답을 로그로 확인합니
-
-# # 예시 토큰
-# access_token = get_access_token()
-# token = "e-jg0Ky5C5FOFXKZcDcQgk:APA91bH0Pnz3VoV6x_HNk62V59A2ZAsieA5B3_724QJfymrmWyHI7L9829A_ibYH5g0fGRFNtP53kbEpmzbAgd3TtqJeWMBG5zC-_oXKK9WVei9lxMVAR-4_C88lJ2W6s-J1nbm6Hdrv"
-# #token = "dH_fM1x6mXv6rvPEnIDs4C:APA91bHefz8Dmg4671QmlGgVqx6QddwAXt9ZTtzlncumuB8I_aV8gjNja5PVbK-jqXTb7CqtUz9TzT_aw_0vHOwYgvDt8ssjyEwbseyeQSqBuaX4FM1U16eNvSk8ts3Nen4RX2cP2zVz"
-# send_push_notification(access_token, token)
     
 
 # 서비스 계정 JSON 파일 경로
@@ -784,23 +802,25 @@ async def insert_token(tokenInsert: TokenInsert):
     existing_entry = session.query(Push_alert).filter(Push_alert.uuid == tokenInsert.uuid).first()
     existing_token = session.query(Push_alert).filter(Push_alert.token == token).first()
 
-    if existing_entry:
-        if existing_token:
-            return {"message": "User already exists with the same token", "data": existing_token}
-        if existing_entry.token != token:
-            new_entry = Push_alert(uuid=tokenInsert.uuid, token=token, permission=tokenInsert.permission)
-            session.add(new_entry)
-            session.commit()
-            session.refresh(new_entry)
-            return {"message": "New user created and token inserted successfully", "data": new_entry}
-        return {"message": "User already exists with the same token", "data": existing_entry}
-    else:
-        if existing_token: 
-            return {"message": "User already exists with the same token", "data": existing_token}
+    if not existing_token and not existing_entry:
         new_entry = Push_alert(uuid=tokenInsert.uuid, token=token, permission=tokenInsert.permission)
         session.add(new_entry)
         session.commit()
-        session.refresh(new_entry)
+        return {"message": "New user created and token inserted successfully", "data": new_entry}
+    elif not existing_entry and existing_token:
+        existing_token.uuid = tokenInsert.uuid
+        session.commit()
+        return {"message": "User update uuid", "data": existing_token}
+    elif existing_entry and existing_entry.token == token:
+        return {"message": "User already exists with the same uuid and token", "data": existing_entry}
+    elif existing_entry and existing_entry.token != token and existing_token:
+        existing_token.uuid = tokenInsert.uuid
+        session.commit()
+        return {"message": "User update uuid", "data": existing_token}
+    else:
+        new_entry = Push_alert(uuid=tokenInsert.uuid, token=token, permission=tokenInsert.permission)
+        session.add(new_entry)
+        session.commit()
         return {"message": "New user created and token inserted successfully", "data": new_entry}
 
 
@@ -828,7 +848,6 @@ async def send_push_notification(notification: PushNotification):
 
     tokens = [token[0] for token in tokens]
     
-    #tokens = ["dH_fM1x6mXv6rvPEnIDs4C:APA91bHefz8Dmg4671QmlGgVqx6QddwAXt9ZTtzlncumuB8I_aV8gjNja5PVbK-jqXTb7CqtUz9TzT_aw_0vHOwYgvDt8ssjyEwbseyeQSqBuaX4FM1U16eNvSk8ts3Nen4RX2cP2zVz", "e-jg0Ky5C5FOFXKZcDcQgk:APA91bH0Pnz3VoV6x_HNk62V59A2ZAsieA5B3_724QJfymrmWyHI7L9829A_ibYH5g0fGRFNtP53kbEpmzbAgd3TtqJeWMBG5zC-_oXKK9WVei9lxMVAR-4_C88lJ2W6s-J1nbm6Hdrv"]
     for token in tokens:
         print(token)
         message = {
@@ -856,3 +875,39 @@ async def send_push_notification(notification: PushNotification):
         raise HTTPException(status_code=400, detail=f"Failed to send notification to tokens: {failed_tokens}")
     
     return {"message": "Push notifications sent successfully"}
+
+
+class UUIDRequest(BaseModel):
+    uuid: str
+
+@app.post("/getPermission")
+async def get_permission(request: UUIDRequest):
+    uuid = request.uuid
+    alerts = session.query(Push_alert).filter(Push_alert.uuid == uuid).all()
+    if not alerts:
+        raise HTTPException(status_code=404, detail="No permission data found for this UUID")
+
+    has_permission = any(alert.permission == "yes" for alert in alerts)
+    return {"has_permission": has_permission}
+
+class UpdatePermissionRequest(BaseModel):
+    uuid: str
+    permission: str
+
+@app.post("/updatePermission")
+async def update_permission(request: UpdatePermissionRequest):
+    uuid = request.uuid
+    permission = request.permission
+
+    if permission not in ["yes", "no"]:
+        raise HTTPException(status_code=400, detail="Invalid permission value")
+
+    try:
+        rows_updated = session.query(Push_alert).filter(Push_alert.uuid == uuid).update({"permission": permission}, synchronize_session=False)
+        if rows_updated == 0:
+            raise HTTPException(status_code=404, detail="No matching data found for this UUID")
+        session.commit()
+        return {"status": "success", "updated_rows": rows_updated}
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=str(e))

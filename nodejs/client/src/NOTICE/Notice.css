@@ -88,6 +88,10 @@
     flex: 1;
     font-weight: bold;
   }
+
+  .notice-arrow {
+    margin-left: 10px;
+  }
   
   .notice-date {
     font-size: 12px;

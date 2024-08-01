@@ -7,9 +7,7 @@ import Sidebar from './components/Sidebar';
 import Backspace from './components/Backspace';
 import userAvatarDefault from './images/userAvatar.png';
 import { Link } from 'react-router-dom';
-
-<link rel="manifest" href="/manifest.json" />
-
+import ToggleButton from './components/ToggleButton'; 
 const Setting = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
@@ -79,7 +77,10 @@ const Setting = () => {
               <button className='button'>회원 정보 수정</button>
             </Link>
             <button className='button'>마이크 볼륨 조절</button>
-            <button className='button'>푸시 알림 설정</button>
+            <div className='push-notification-setting'>
+              <button className='button'>푸시 알림 설정</button>
+              <ToggleButton />
+            </div>
 
             &nbsp;&nbsp;&nbsp;
             <p>User</p>

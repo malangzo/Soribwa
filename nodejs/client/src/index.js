@@ -17,6 +17,7 @@ import NoticeEdit from './NOTICE/NoticeEdit';
 import NoticeContent from './NOTICE/NoticeContent';
 
 import NaverLoginSave from "./LOGIN/SocialLoginSave";
+import { Cookies, CookiesProvider } from "react-cookie";
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -105,7 +106,7 @@ onMessage(messaging, (payload) => {
     navigator.serviceWorker.ready.then((registration) => {
       registration.showNotification(payload.notification.title, {
         body: payload.notification.body,
-        icon: '/logo192.png'
+        icon: '../Public/logo192.png'
       });
     });
   } else {
@@ -114,22 +115,43 @@ onMessage(messaging, (payload) => {
 });
 
 function tokenCheck() {
+    const cookies = new Cookies();
     const accessToken = sessionStorage.getItem('accessToken');
     const userToken = {'accessToken':accessToken};
-    console.log('jwt: ', document.cookie.indexOf('jwt=').onload)
+    const decookie = decodeURIComponent(document.cookie);
+    const cookie = decookie.split(";");
+    console.log("check cs:", cookie);
+    console.log('jwt: ', cookies.get('jwt'))
     if (userToken?.accessToken) {
-        fetch('https://jnodejs.soribwa.com/refresh', {
+        fetch('https://jnodejs.soribwa.com/posts', {
             method: 'GET',
-            header: {
+            headers: {
                 "Content-Type": "application/json",
                 //Authorization: `Bearer ${document.cookie.indexOf('jwt=')}`,
                 Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+                credentials: "include",
+                
             },
         }).then((res) => {
-            console.log('ref res', res)
+            // console.log('ref res', res.status, res.message, res.message, res, res.data)
+            // if (res.status == 403) {
+            //     fetch('https://jnodejs.soribwa.com/refresh', {
+            //         method: 'GET',
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //             //Authorization: `Bearer ${document.cookie.indexOf('jwt=')}`,
+            //             Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+            //             credentials: "same-origin",
+                        
+            //         },
+            //     }).then((res0) => {
+            //         console.log('ref res', res0.status, res0.message, res0.message, res0, res0.data)
+            //     })
+            // }
         })
     }
     return userToken?.accessToken
+
 }
 
 const token = tokenCheck();
@@ -140,6 +162,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID}
     onScriptLoadError={() => console.log("실패.ㅎ")}
     onScriptLoadSuccess={() => console.log("")}>
+    <CookiesProvider>
     <BrowserRouter>
       <Routes>
         {/* <Route path='/App' element={token ? <App /> : <Login/>} /> */}
@@ -161,6 +184,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path='/SocialLoginSave' element={<NaverLoginSave />} />
       </Routes>
     </BrowserRouter>
+    </CookiesProvider>
   </GoogleOAuthProvider>
 );
 

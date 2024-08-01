@@ -52,6 +52,7 @@ const Login = () => {
 
             if (result.status) {
                 if (result.status == 200) {
+                    sessionStorage.setItem("uuid", result.data.uuid);
                     sessionStorage.setItem("accessToken", result.data.accessToken);
                     sessionStorage.setItem("id", result.data.email);
                     sessionStorage.setItem("name", result.data.name);

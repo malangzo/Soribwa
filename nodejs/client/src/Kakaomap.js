@@ -111,6 +111,7 @@ const KakaoMap = forwardRef((props, ref) => {
             jackhammer: 'https://github.com/malangzo/images/blob/3fcc31f09c9f0ac353744f3d62d21167f6cbccb7/jackhammer.png?raw=true',
             drilling: 'https://github.com/malangzo/images/blob/3fcc31f09c9f0ac353744f3d62d21167f6cbccb7/drilling.png?raw=true',
             car_horn: 'https://github.com/malangzo/images/blob/3fcc31f09c9f0ac353744f3d62d21167f6cbccb7/car_horn.png?raw=true',
+            siren: 'https://github.com/malangzo/images/blob/3fcc31f09c9f0ac353744f3d62d21167f6cbccb7/siren.png?raw=true',
           };
 
           // 라벨명 딕셔너리
@@ -119,6 +120,7 @@ const KakaoMap = forwardRef((props, ref) => {
             jackhammer: '착암기 소음',
             drilling: '드릴 소음',
             car_horn: '차 경적 소음',
+            siren: '사이렌 소음',
           };
 
           const handleMarkerData = () => {
