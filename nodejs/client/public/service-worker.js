@@ -33,16 +33,3 @@ self.addEventListener("fetch", (event) => {
         );
     }
 });
-
-// self.addEventListener('push', (event) => {
-//     console.log('Push event received:', event);
-//     const data = event.data.json();
-//     const options = {
-//         body: data.message.body,
-//         icon: 'logo192.png',
-//     };
-
-//     event.waitUntil(
-//         self.registration.showNotification(data.message.title, options)
-//     );
-// });

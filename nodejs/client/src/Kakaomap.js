@@ -61,7 +61,8 @@ const KakaoMap = forwardRef((props, ref) => {
 
           // 사용자의 현재 위치를 지도에 표시하는 함수
           if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(function (position) {
+            navigator.geolocation.watchPosition(
+              function (position) {
               const lat = position.coords.latitude; // 위도
               const lon = position.coords.longitude; // 경도
               const locPosition = new kakao.maps.LatLng(lat, lon); // 사용자의 현재 위치 좌표

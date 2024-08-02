@@ -106,7 +106,8 @@ onMessage(messaging, (payload) => {
     navigator.serviceWorker.ready.then((registration) => {
       registration.showNotification(payload.notification.title, {
         body: payload.notification.body,
-        icon: '../Public/logo192.png'
+        icon: '../public/logo192.png',
+        tag: "uniqueTag"
       });
     });
   } else {
@@ -122,17 +123,17 @@ function tokenCheck() {
     const cookie = decookie.split(";");
     console.log("check cs:", cookie);
     console.log('jwt: ', cookies.get('jwt'))
-    if (userToken?.accessToken) {
-        fetch('https://jnodejs.soribwa.com/posts', {
-            method: 'GET',
-            headers: {
-                "Content-Type": "application/json",
-                //Authorization: `Bearer ${document.cookie.indexOf('jwt=')}`,
-                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
-                credentials: "include",
+    // if (userToken?.accessToken) {
+    //     fetch('https://jnodejs.soribwa.com/posts', {
+    //         method: 'GET',
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             //Authorization: `Bearer ${document.cookie.indexOf('jwt=')}`,
+    //             Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+    //             credentials: "include",
                 
-            },
-        }).then((res) => {
+    //         },
+    //     }).then((res) => {
             // console.log('ref res', res.status, res.message, res.message, res, res.data)
             // if (res.status == 403) {
             //     fetch('https://jnodejs.soribwa.com/refresh', {
@@ -148,8 +149,8 @@ function tokenCheck() {
             //         console.log('ref res', res0.status, res0.message, res0.message, res0, res0.data)
             //     })
             // }
-        })
-    }
+        // })
+    //}
     return userToken?.accessToken
 
 }
