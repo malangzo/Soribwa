@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Session from 'react-session-api';
 import './App.css';
 import './Cycle.css';
 import Header from './components/Header';
@@ -21,6 +22,9 @@ const Setting = () => {
   useEffect(() => {
     sessionStorage.setItem("img", userAvatar);
     sessionStorage.setItem("name", userName);
+    console.log("check0: ", Session.get("img"))
+    console.log("check1: ", Session.get("name"))
+    console.log(Session.items());
   }, [userAvatar, userName]);
 
   const handleLogout = () => {

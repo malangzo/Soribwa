@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
+import Session from 'react-session-api';
+
 //import GoogleAuthLogin from "./GoogleAuthLogin";
 import GoogleLogin from "./GoogleLogin";
 import KakaoOAuth from "./KakaoOAuth.js";
@@ -58,6 +60,14 @@ const Login = () => {
                     sessionStorage.setItem("name", result.data.name);
                     sessionStorage.setItem("img", result.data.user_avatar);
                     sessionStorage.setItem("role", result.data.role);
+                    Session.set("uuid", result.data.uuid);
+                    Session.set("accessToken", result.data.accessToken);
+                    Session.set("id", result.data.email);
+                    Session.set("name", result.data.name);
+                    Session.set("img", result.data.user_avatar);
+                    Session.set("role", result.data.role);
+                    console.log("Session check: ", Session.items())
+
 
                     const insertToken = async (uuid, fcmToken) => {
                         try {

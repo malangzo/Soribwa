@@ -18,16 +18,20 @@
 }
 
 .transcription {
-    max-width: 90%; /* 말풍선 가로 크기 고정 */
+    max-width: 90%;
+    /* 말풍선 가로 크기 고정 */
     width: fit-content;
     background-color: #f1f0f0;
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 10px;
     word-wrap: break-word;
-    margin-left: 0; /* 왼쪽 여백을 0으로 설정 */
-    margin-right: auto; /* 오른쪽 여백을 자동으로 설정하여 왼쪽으로 정렬 */
-    align-self: flex-start; /* flexbox 컨테이너 내에서 수직 정렬을 왼쪽으로 설정 */
+    margin-left: 0;
+    /* 왼쪽 여백을 0으로 설정 */
+    margin-right: auto;
+    /* 오른쪽 여백을 자동으로 설정하여 왼쪽으로 정렬 */
+    align-self: flex-start;
+    /* flexbox 컨테이너 내에서 수직 정렬을 왼쪽으로 설정 */
 }
 
 .transcription p {
@@ -58,16 +62,76 @@
     transform: translate(-50%, -50%);
 }
 
-.emotion-happy { color: #959802; }
-.emotion-happy::before { content: '😊 '; }
-.emotion-sad { color: blue; }
-.emotion-sad::before { content: '😢 '; }
-.emotion-angry { color: red; }
-.emotion-angry::before { content: '😠 '; }
-.emotion-axious { color: purple; }
-.emotion-axious::before { content: '😰 '; }
-.emotion-neutrality { color: black; }
-.emotion-neutrality::before { content: '😐 '; }
+.conversation-button.active:after {
+    border: 1px solid #FEC6C7;
+    border-radius: 50%;
+    content: "";
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: -25px;
+    left: -20px;
+    transform: translate(-50%, -50%) scale(1);
+    transform-origin: center center;
+    animation: pulse 900ms forwards infinite ease-in-out;
+    opacity: 0;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.5);
+        opacity: .5;
+    }
+
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+.emotion-happy {
+    color: #959802;
+}
+
+.emotion-happy::before {
+    content: '😊 ';
+}
+
+.emotion-sad {
+    color: blue;
+}
+
+.emotion-sad::before {
+    content: '😢 ';
+}
+
+.emotion-angry {
+    color: red;
+}
+
+.emotion-angry::before {
+    content: '😠 ';
+}
+
+.emotion-axious {
+    color: purple;
+}
+
+.emotion-axious::before {
+    content: '😰 ';
+}
+
+.emotion-neutrality {
+    color: black;
+}
+
+.emotion-neutrality::before {
+    content: '😐 ';
+}
 
 .loading-message {
     text-align: center;

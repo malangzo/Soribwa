@@ -153,7 +153,14 @@ const Conversation = () => {
                     ))}
                     <div ref={transcriptionsEndRef} />
                 </div>
-                <button id="transcript-button" className="play-button" onClick={isRecording ? stopRecording : startRecording}>
+                {/* <button id="transcript-button" className="play-button" onClick={isRecording ? stopRecording : startRecording}>
+                    <img src={isRecording ? stopIcon : startIcon} alt={isRecording ? 'Stop' : 'Start'} />
+                </button> */}
+                <button
+                    id="transcript-button"
+                    className={`conversation-button ${isRecording ? 'active' : ''}`}
+                    onClick={isRecording ? stopRecording : startRecording}
+                >
                     <img src={isRecording ? stopIcon : startIcon} alt={isRecording ? 'Stop' : 'Start'} />
                 </button>
             </main>

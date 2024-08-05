@@ -1,7 +1,6 @@
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 import os.path
-import json
 from dotenv import load_dotenv
 
 # BASE_DIR 설정

@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import Cyclesound from './Cyclesound';
-import CycleResult from './CycleResult';
 import Graph from './Graph';
 import SoundMap from './SoundMap';
 import Livesound from './Livesound';
@@ -168,8 +166,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Routes>
         {/* <Route path='/App' element={token ? <App /> : <Login/>} /> */}
         <Route path='/App' element={<App />} />
-        <Route path='/Cyclesound' element={<Cyclesound />} />
-        <Route path='/CycleResult' element={<CycleResult />} />
         <Route path='/Graph' element={<Graph />} />
         <Route path='/SoundMap' element={<SoundMap />} />
         <Route path='/Livesound' element={<Livesound />} />

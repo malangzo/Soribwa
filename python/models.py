@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text, LargeBinary, create_engine, SmallInteger, DateTime
+from sqlalchemy import Column, Integer, String, Text, LargeBinary, SmallInteger, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 
 Base = declarative_base()
