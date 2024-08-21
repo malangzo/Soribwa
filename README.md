@@ -1,9 +1,9 @@
-🔉 소리봐 : 중증 청각장애인을 위한 소리 및 감정 분석 AI 서비스
+## 🔉 소리봐 : 중증 청각장애인을 위한 소리 및 감정 분석 AI 서비스
+
+<br>
 
 ![개요](https://github.com/user-attachments/assets/7749af47-3770-4bd0-853f-adb125e37a93)
 ![Untitled (3)](https://github.com/user-attachments/assets/1fbf95ed-32fe-4811-a2a6-0af39f225b3e)
-
-
 
 <br>
 
